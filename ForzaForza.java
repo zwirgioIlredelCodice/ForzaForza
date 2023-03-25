@@ -44,7 +44,7 @@ public class ForzaForza implements CXPlayer {
 		int save    = L[rand.nextInt(L.length)]; // Save a random column
 
 		try {
-			int col = bestmove(B, L, 2);
+			int col = bestmove(B, 2);
 			return col;
 		} catch (TimeoutException e) {
 			System.err.println("Timeout!!! Random column selected");
@@ -58,8 +58,9 @@ public class ForzaForza implements CXPlayer {
 	}
 
 
-	private int bestmove(CXBoard B, Integer[] L, int depth) throws TimeoutException {
-        int bestmove = 0;
+	private int bestmove(CXBoard B, int depth) throws TimeoutException {
+        Integer[] L = B.getAvailableColumns();
+        int bestmove = L[0];
         int bestval;
 
         int player = B.currentPlayer();
