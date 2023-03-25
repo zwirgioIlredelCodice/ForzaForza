@@ -18,7 +18,7 @@ public class ForzaForza implements CXPlayer {
 	private long START;
 
 	/* Default empty constructor */
-	public L1() {
+	public ForzaForza() {
 	}
 
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
@@ -44,7 +44,7 @@ public class ForzaForza implements CXPlayer {
 		int save    = L[rand.nextInt(L.length)]; // Save a random column
 
 		try {
-			int col = bestmove(B,L);
+			int col = bestmove(B, L, 2);
 			return col;
 		} catch (TimeoutException e) {
 			System.err.println("Timeout!!! Random column selected");
@@ -58,51 +58,49 @@ public class ForzaForza implements CXPlayer {
 	}
 
 
-	private int bestmove(CXBoard B, Integer[] L) throws TimeoutException {
-        int bestmove;
+	private int bestmove(CXBoard B, Integer[] L, int depth) throws TimeoutException {
+        int bestmove = 0;
         int bestval;
 
         int player = B.currentPlayer();
 
-        if (player == 0) {
-            bestval = -1;
-            for (i : L) {
-                B.markColumn(i);
+        System.err.format("player %d\n", player);
 
-                // -------------------
 
-                B.unmarkColumn();
+        bestval = -1;
+        for (int i : L) {
+            B.markColumn(i);
+
+            int val = AlphaBeta(B, -1, +1, depth);
+            if (val > bestval) {
+                bestval = val;
+                bestmove = i;
             }
-
-        } else {
-
+            System.err.format("move = %d, value = %d\n", i, val);
+            B.unmarkColumn();
         }
+
+        System.err.format("CHOSEN move = %d, value = %d\n", bestmove, bestval);
+        return bestmove;
 	}
 
 	private int evaluate(CXBoard B) {
-        CXGameState state = B.gamestate();
-        int value;
+        CXGameState state = B.gameState();
+        int value = 0;
 
-        switch(state) {
-            case OPEN:
-                value = 0;
-                break;
-            case DRAW:
-                value = 0;
-                break;
-            case WINP1:
-                value = 1;
-                break;
-            case WINP2:
-                value = -1;
-                break;
+        if (state == myWin) {
+            value = 1;
         }
-
+        else if (state == yourWin) {
+            value = -1;
+        } else {
+            value = 0;
+        }
         return value;
 	}
 
 	private int AlphaBeta(CXBoard B, int alpha, int beta, int depth) {
-        CXGameState state = B.gamestate();
+        CXGameState state = B.gameState();
         int player = B.currentPlayer();
         int eval;
 
@@ -113,11 +111,11 @@ public class ForzaForza implements CXPlayer {
         else if (player == 0) {
             eval = -1;
             Integer[] L = B.getAvailableColumns();
-            for (i : L) {
+            for (int i : L) {
                 B.markColumn(i);
 
                 eval = Math.max(eval, AlphaBeta(B, alpha, beta, depth - 1));
-                alpha = Math.max(eval, alpha)
+                alpha = Math.max(eval, alpha);
 
                 if (beta <= alpha) {
                     break;
@@ -130,11 +128,11 @@ public class ForzaForza implements CXPlayer {
 
             eval = 1;
             Integer[] L = B.getAvailableColumns();
-            for (i : L) {
+            for (int i : L) {
                 B.markColumn(i);
 
                 eval = Math.min(eval, AlphaBeta(B, alpha, beta, depth - 1));
-                alpha = Math.min(eval, alpha)
+                alpha = Math.min(eval, alpha);
 
                 if (beta <= alpha) {
                     break;
