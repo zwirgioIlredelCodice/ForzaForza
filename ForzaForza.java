@@ -67,17 +67,32 @@ public class ForzaForza implements CXPlayer {
         System.err.format("player %d\n", player);
 
 
-        bestval = -1;
-        for (int i : L) {
-            B.markColumn(i);
+        if (player == 0) {
+            bestval = Integer.MIN_VALUE;
+            for (int i : L) {
+                B.markColumn(i);
 
-            int val = AlphaBeta(B, -1, +1, depth);
-            if (val > bestval) {
-                bestval = val;
-                bestmove = i;
+                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+                if (val > bestval) {
+                    bestval = val;
+                    bestmove = i;
+                }
+                System.err.format("move = %d, value = %d\n", i, val);
+                B.unmarkColumn();
             }
-            System.err.format("move = %d, value = %d\n", i, val);
-            B.unmarkColumn();
+        } else {
+            bestval = Integer.MAX_VALUE;
+            for (int i : L) {
+                B.markColumn(i);
+
+                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+                if (val < bestval) {
+                    bestval = val;
+                    bestmove = i;
+                }
+                System.err.format("move = %d, value = %d\n", i, val);
+                B.unmarkColumn();
+            }
         }
 
         System.err.format("CHOSEN move = %d, value = %d\n", bestmove, bestval);
@@ -88,13 +103,21 @@ public class ForzaForza implements CXPlayer {
         CXGameState state = B.gameState();
         int value = 0;
 
-        if (state == myWin) {
-            value = 1;
-        }
-        else if (state == yourWin) {
-            value = -1;
-        } else {
-            value = 0;
+        switch (state) {
+            case OPEN:
+                value = 0;
+                break;
+            case DRAW:
+                value = 0;
+                break;
+            case WINP1:
+                value = Integer.MAX_VALUE;
+                break;
+            case WINP2:
+                value = Integer.MIN_VALUE;
+                break;
+            default:
+                break;
         }
         return value;
 	}
@@ -104,13 +127,14 @@ public class ForzaForza implements CXPlayer {
         int player = B.currentPlayer();
         int eval;
 
+        Integer[] L = B.getAvailableColumns();
+
         if (depth == 0 || state != CXGameState.OPEN) {
             eval = evaluate(B);
         }
 
         else if (player == 0) {
-            eval = -1;
-            Integer[] L = B.getAvailableColumns();
+            eval = Integer.MIN_VALUE;
             for (int i : L) {
                 B.markColumn(i);
 
@@ -125,9 +149,7 @@ public class ForzaForza implements CXPlayer {
             }
 
         } else {
-
-            eval = 1;
-            Integer[] L = B.getAvailableColumns();
+            eval = Integer.MAX_VALUE;
             for (int i : L) {
                 B.markColumn(i);
 
