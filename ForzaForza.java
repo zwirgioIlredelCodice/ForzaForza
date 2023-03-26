@@ -44,7 +44,7 @@ public class ForzaForza implements CXPlayer {
 		int save    = L[rand.nextInt(L.length)]; // Save a random column
 
 		try {
-			int col = bestmove(B, 2);
+			int col = IterativeDepening(B, Integer.MAX_VALUE);
 			return col;
 		} catch (TimeoutException e) {
 			System.err.println("Timeout!!! Random column selected");
@@ -53,10 +53,22 @@ public class ForzaForza implements CXPlayer {
 	}
 
 	private void checktime() throws TimeoutException {
-		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (99.0 / 100.0))
+		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (90.0 / 100.0))
 			throw new TimeoutException();
 	}
 
+
+    private int IterativeDepening(CXBoard B, int depth) throws TimeoutException {
+        int move = 0;
+        for (int d = 1; d <= depth; d++) {
+            try {
+                move = bestmove(B, d);
+            } catch (TimeoutException e) {
+                return move;
+            }
+        }
+        return move;
+    }
 
 	private int bestmove(CXBoard B, int depth) throws TimeoutException {
         Integer[] L = B.getAvailableColumns();
@@ -71,9 +83,10 @@ public class ForzaForza implements CXPlayer {
         if (player == 0) {
             bestval = Integer.MIN_VALUE;
             for (int i : L) {
-                B.markColumn(i);
+                checktime();
 
-                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+                B.markColumn(i);
+                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth - 1);
                 if (val > bestval) {
                     bestval = val;
                     bestmove = i;
@@ -84,9 +97,10 @@ public class ForzaForza implements CXPlayer {
         } else {
             bestval = Integer.MAX_VALUE;
             for (int i : L) {
-                B.markColumn(i);
+                checktime();
 
-                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+                B.markColumn(i);
+                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth - 1);
                 if (val < bestval) {
                     bestval = val;
                     bestmove = i;
@@ -123,45 +137,49 @@ public class ForzaForza implements CXPlayer {
         return value;
 	}
 
-	private int AlphaBeta(CXBoard B, int alpha, int beta, int depth) {
+	private int AlphaBeta(CXBoard B, int alpha, int beta, int depth) throws TimeoutException {
         CXGameState state = B.gameState();
         int player = B.currentPlayer();
         int eval;
 
         Integer[] L = B.getAvailableColumns();
 
-        if (depth == 0 || state != CXGameState.OPEN) {
+        if (depth <= 0 || state != CXGameState.OPEN) {
             eval = evaluate(B);
         }
 
         else if (player == 0) {
             eval = Integer.MIN_VALUE;
             for (int i : L) {
+                checktime();
+
                 B.markColumn(i);
 
                 eval = Math.max(eval, AlphaBeta(B, alpha, beta, depth - 1));
                 alpha = Math.max(eval, alpha);
 
+                B.unmarkColumn();
+
                 if (beta <= alpha) {
                     break;
                 }
-
-                B.unmarkColumn();
             }
 
         } else {
             eval = Integer.MAX_VALUE;
             for (int i : L) {
+                checktime();
+
                 B.markColumn(i);
 
                 eval = Math.min(eval, AlphaBeta(B, alpha, beta, depth - 1));
-                alpha = Math.min(eval, alpha);
+                beta = Math.min(eval, beta);
+
+                B.unmarkColumn();
 
                 if (beta <= alpha) {
                     break;
                 }
-
-                B.unmarkColumn();
             }
         }
         return eval;
@@ -169,7 +187,7 @@ public class ForzaForza implements CXPlayer {
 
 
 
-	public String playerName() {
+    public String playerName() {
 		return "ForzaForza";
 	}
 }
