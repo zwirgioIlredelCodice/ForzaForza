@@ -14,8 +14,9 @@ public class ForzaForza implements CXPlayer {
 	private Random rand;
 	private CXGameState myWin;
 	private CXGameState yourWin;
-	private int  TIMEOUT;
-	private long START;
+
+	private MyTimer timer;
+	private MoveEngine engine;
 
 	/* Default empty constructor */
 	public ForzaForza() {
@@ -26,7 +27,8 @@ public class ForzaForza implements CXPlayer {
 		rand    = new Random(System.currentTimeMillis());
 		myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
 		yourWin = first ? CXGameState.WINP2 : CXGameState.WINP1;
-		TIMEOUT = timeout_in_secs;
+		timer = new MyTimer(timeout_in_secs);
+		engine = new MoveEngine(10, timer, true);
 	}
 
 	/**
@@ -38,154 +40,19 @@ public class ForzaForza implements CXPlayer {
 	 * </p>
 	 */
 	public int selectColumn(CXBoard B) {
-		START = System.currentTimeMillis(); // Save starting time
+		timer.start();
 
 		Integer[] L = B.getAvailableColumns();
 		int save    = L[rand.nextInt(L.length)]; // Save a random column
 
 		try {
-			int col = IterativeDepening(B, Integer.MAX_VALUE);
+			int col = engine.IterativeDepening(B);
 			return col;
 		} catch (TimeoutException e) {
 			System.err.println("Timeout!!! Random column selected");
 			return save;
 		}
 	}
-
-	private void checktime() throws TimeoutException {
-		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (90.0 / 100.0))
-			throw new TimeoutException();
-	}
-
-
-    private int IterativeDepening(CXBoard B, int depth) throws TimeoutException {
-        int move = 0;
-        for (int d = 1; d <= depth; d++) {
-            try {
-                move = bestmove(B, d);
-            } catch (TimeoutException e) {
-                return move;
-            }
-        }
-        return move;
-    }
-
-	private int bestmove(CXBoard B, int depth) throws TimeoutException {
-        Integer[] L = B.getAvailableColumns();
-        int bestmove = L[0];
-        int bestval;
-
-        int player = B.currentPlayer();
-
-        System.err.format("player %d\n", player);
-
-
-        if (player == 0) {
-            bestval = Integer.MIN_VALUE;
-            for (int i : L) {
-                checktime();
-
-                B.markColumn(i);
-                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth - 1);
-                if (val > bestval) {
-                    bestval = val;
-                    bestmove = i;
-                }
-                System.err.format("move = %d, value = %d\n", i, val);
-                B.unmarkColumn();
-            }
-        } else {
-            bestval = Integer.MAX_VALUE;
-            for (int i : L) {
-                checktime();
-
-                B.markColumn(i);
-                int val = AlphaBeta(B, Integer.MIN_VALUE, Integer.MAX_VALUE, depth - 1);
-                if (val < bestval) {
-                    bestval = val;
-                    bestmove = i;
-                }
-                System.err.format("move = %d, value = %d\n", i, val);
-                B.unmarkColumn();
-            }
-        }
-
-        System.err.format("CHOSEN move = %d, value = %d\n", bestmove, bestval);
-        return bestmove;
-	}
-
-	private int evaluate(CXBoard B) {
-        CXGameState state = B.gameState();
-        int value = 0;
-
-        switch (state) {
-            case OPEN:
-                value = 0;
-                break;
-            case DRAW:
-                value = 0;
-                break;
-            case WINP1:
-                value = Integer.MAX_VALUE;
-                break;
-            case WINP2:
-                value = Integer.MIN_VALUE;
-                break;
-            default:
-                break;
-        }
-        return value;
-	}
-
-	private int AlphaBeta(CXBoard B, int alpha, int beta, int depth) throws TimeoutException {
-        CXGameState state = B.gameState();
-        int player = B.currentPlayer();
-        int eval;
-
-        Integer[] L = B.getAvailableColumns();
-
-        if (depth <= 0 || state != CXGameState.OPEN) {
-            eval = evaluate(B);
-        }
-
-        else if (player == 0) {
-            eval = Integer.MIN_VALUE;
-            for (int i : L) {
-                checktime();
-
-                B.markColumn(i);
-
-                eval = Math.max(eval, AlphaBeta(B, alpha, beta, depth - 1));
-                alpha = Math.max(eval, alpha);
-
-                B.unmarkColumn();
-
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-
-        } else {
-            eval = Integer.MAX_VALUE;
-            for (int i : L) {
-                checktime();
-
-                B.markColumn(i);
-
-                eval = Math.min(eval, AlphaBeta(B, alpha, beta, depth - 1));
-                beta = Math.min(eval, beta);
-
-                B.unmarkColumn();
-
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-        }
-        return eval;
-	}
-
-
 
     public String playerName() {
 		return "ForzaForza";
