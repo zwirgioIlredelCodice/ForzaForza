@@ -29,11 +29,12 @@ public class MoveEngine {
         for (d = 1; d <= max_depth; d++) {
             try {
                 move = bestmove(B, d);
+                System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {
+                System.err.format("tempo finito\n");
                 return move;
             }
         }
-        System.err.format("### Depth %d\n", d);
         return move;
     }
 
@@ -43,9 +44,6 @@ public class MoveEngine {
         int bestval;
 
         int player = B.currentPlayer();
-
-        System.err.format("player %d\n", player);
-
 
         if (player == 0) {
             bestval = Integer.MIN_VALUE;
@@ -58,7 +56,6 @@ public class MoveEngine {
                     bestval = val;
                     bestmove = i;
                 }
-                System.err.format("move = %d, value = %d\n", i, val);
                 B.unmarkColumn();
             }
         } else {
@@ -72,12 +69,10 @@ public class MoveEngine {
                     bestval = val;
                     bestmove = i;
                 }
-                System.err.format("move = %d, value = %d\n", i, val);
                 B.unmarkColumn();
             }
         }
 
-        System.err.format("CHOSEN move = %d, value = %d\n", bestmove, bestval);
         return bestmove;
 	}
 

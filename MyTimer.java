@@ -19,4 +19,7 @@ public class MyTimer {
 		if ((System.currentTimeMillis() - START) / 1000.0 >= TIMEOUT * (90.0 / 100.0))
 			throw new TimeoutException();
 	}
+	public long getTimeElapsed() {
+        return (System.currentTimeMillis() - START);
+	}
 }
