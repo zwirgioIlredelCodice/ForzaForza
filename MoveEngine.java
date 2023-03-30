@@ -14,13 +14,14 @@ public class MoveEngine {
     private boolean debug;
 
     private MyTimer timer;
-
+    private Evaluation evaluator;
 
 
     public MoveEngine(int max_depth, MyTimer timer, boolean debug) {
         this.max_depth = max_depth;
         this.debug = debug;
         this.timer = timer;
+        this.evaluator = new Evaluation();
     }
 
     public int IterativeDepening(CXBoard B) throws TimeoutException {
@@ -84,7 +85,7 @@ public class MoveEngine {
         Integer[] L = B.getAvailableColumns();
 
         if (depth <= 0 || state != CXGameState.OPEN) {
-            eval = evaluate(B);
+            eval = evaluator.evaluate(B);
         }
 
         else if (player == 0) {
@@ -122,28 +123,5 @@ public class MoveEngine {
             }
         }
         return eval;
-	}
-
-	private int evaluate(CXBoard B) {
-        CXGameState state = B.gameState();
-        int value = 0;
-
-        switch (state) {
-            case OPEN:
-                value = 0;
-                break;
-            case DRAW:
-                value = 0;
-                break;
-            case WINP1:
-                value = Integer.MAX_VALUE;
-                break;
-            case WINP2:
-                value = Integer.MIN_VALUE;
-                break;
-            default:
-                break;
-        }
-        return value;
 	}
 }
