@@ -28,7 +28,7 @@ public class ForzaForza implements CXPlayer {
 		myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
 		yourWin = first ? CXGameState.WINP2 : CXGameState.WINP1;
 		timer = new MyTimer(timeout_in_secs);
-		engine = new MoveEngine(Integer.MAX_VALUE, timer, true);
+		engine = new MoveEngine(10, timer, true);
 	}
 
 	/**

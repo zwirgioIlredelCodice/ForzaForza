@@ -3,71 +3,14 @@ package connectx.ForzaForza;
 import connectx.CXGameState;
 
 public class Move implements Comparable {
-    private int score;
-    private CXGameState state;
+    private Score s;
+    public int move;
+    private int M; // righe massime
 
-    public Move(int score, CXGameState state) {
-        this.score = score;
-        this.state = state;
-    }
-
-    private int compareScore(int s1, int s2) {
-        if (s1 > s2)
-            return 1;
-        else if (s1 < s2)
-            return -1;
-        else
-            return 0;
-    }
-
-    private int compareState(CXGameState s1, CXGameState s2) {
-        switch (s1) {
-            case OPEN:
-                switch (s2) {
-                    case OPEN:
-                        return 0;
-                    case DRAW:
-                        return 1;
-                    case WINP1:
-                        return -1;
-                    case WINP2:
-                        return 1;
-                }
-            case DRAW:
-                switch (s2) {
-                    case OPEN:
-                        return -1;
-                    case DRAW:
-                        return 0;
-                    case WINP1:
-                        return -1;
-                    case WINP2:
-                        return 1;
-                }
-            case WINP1:
-                switch (s2) {
-                    case OPEN:
-                        return 1;
-                    case DRAW:
-                        return 1;
-                    case WINP1:
-                        return 0;
-                    case WINP2:
-                        return 1;
-                }
-            case WINP2:
-                switch (s2) {
-                    case OPEN:
-                        return -1;
-                    case DRAW:
-                        return -1;
-                    case WINP1:
-                        return -1;
-                    case WINP2:
-                        return 0;
-                }
-            }
-        return 0;
+    public Move(int move, Score s, int M) {
+        this.s = s;
+        this.move = move;
+        this.M = M;
     }
 
     /*
@@ -77,20 +20,18 @@ public class Move implements Comparable {
         if ((o != null) && (o instanceof Move)) {
             Move nm = (Move) o;
 
-            if (this.state == nm.state) {
-                switch (this.state) {
-                    case OPEN:
-                        return compareScore(this.score, nm.score);
-                    case DRAW:
-                        return 0;
-                    case WINP1:
-                        return -compareScore(this.score, nm.score); //prima la vittoria piu vicina
-                    case WINP2:
-                        return compareScore(this.score, nm.score); //prima la scofitta piu lontana
-                }
-            }
-            else {
-                return compareState(this.state, nm.state);
+            int compareScore = this.s.compareTo(nm.s);
+            if (compareScore == 0) {
+                int halfRow = (int) Math.floor(this.M / 2);
+
+                int distanceA = Math.abs(this.move - halfRow);
+                int distanceB = Math.abs(nm.move   - halfRow);
+
+                if (distanceA < distanceB) return 1;
+                else if (distanceA > distanceB) return -1;
+                else return 0;
+            } else {
+                return compareScore;
             }
         }
         return -1;

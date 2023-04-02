@@ -12,26 +12,11 @@ public class Evaluation {
     public Evaluation(){
     }
 
-    public int evaluate(CXBoard B) {
+    public Score evaluate(CXBoard B) {
         CXGameState state = B.gameState();
         int value = 0;
+        Score s = new Score(value, state);
 
-        switch (state) {
-            case OPEN:
-                value = 0;
-                break;
-            case DRAW:
-                value = 0;
-                break;
-            case WINP1:
-                value = Integer.MAX_VALUE;
-                break;
-            case WINP2:
-                value = Integer.MIN_VALUE;
-                break;
-            default:
-                break;
-        }
-        return value;
+        return s;
 	}
 }
