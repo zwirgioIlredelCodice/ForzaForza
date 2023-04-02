@@ -73,7 +73,7 @@ public class MoveEngine {
 
             B.unmarkColumn();
 
-            ml[i] = new Move(L[i], val, B.M);
+            ml[i] = new Move(L[i], val, B.currentPlayer(), B.M);
         }
 
         return ml;

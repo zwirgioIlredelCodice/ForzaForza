@@ -5,11 +5,13 @@ import connectx.CXGameState;
 public class Move implements Comparable {
     private Score s;
     public int move;
+    private int player;
     private int M; // righe massime
 
-    public Move(int move, Score s, int M) {
+    public Move(int move, Score s, int player, int M) {
         this.s = s;
         this.move = move;
+        this.player = player;
         this.M = M;
     }
 
@@ -27,9 +29,13 @@ public class Move implements Comparable {
                 int distanceA = Math.abs(this.move - halfRow);
                 int distanceB = Math.abs(nm.move   - halfRow);
 
-                if (distanceA < distanceB) return 1;
-                else if (distanceA > distanceB) return -1;
-                else return 0;
+                int cp = 0;
+                if (distanceA < distanceB) cp = 1;
+                else if (distanceA > distanceB) cp = -1;
+                else return cp = 0;
+
+                if (player == 0) return cp;
+                else return -cp;
             } else {
                 return compareScore;
             }
