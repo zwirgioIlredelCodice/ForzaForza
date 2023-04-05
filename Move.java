@@ -3,7 +3,7 @@ package connectx.ForzaForza;
 import connectx.CXGameState;
 
 public class Move implements Comparable {
-    private Score s;
+    public Score s;
     public int move;
     private int player;
     private int M; // righe massime

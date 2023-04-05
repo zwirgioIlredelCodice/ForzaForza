@@ -37,11 +37,15 @@ public class MoveEngine {
         int move = 0;
         int player = B.currentPlayer();
 
+        for (int i = 0; i < L.length; i++) { // inizializing move array
+            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), player, B.M);
+        }
+
         int d = 1;
         for (d = 1; d <= max_depth; d++) {
             try {
 
-                ml = movelist(B, d);
+                ml = movelist(B, ml, d);
 
                 if (player == 0) {
                     Arrays.sort(ml, Collections.reverseOrder());
@@ -50,6 +54,10 @@ public class MoveEngine {
                 }
 
                 move = ml[0].move;
+                /*
+                if (ml[0].s.state != CXGameState.OPEN && ml[0].s.state != CXGameState.DRAW) {
+                    return move;
+                }*/
 
                 System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {
@@ -60,24 +68,62 @@ public class MoveEngine {
         return move;
     }
 
-    private Move[] movelist(CXBoard B, int depth) throws TimeoutException {
-        Integer[] L = B.getAvailableColumns();
-        Move[] ml = new Move[L.length];
+    private Move[] movelist(CXBoard B, Move[] prevMl, int depth) throws TimeoutException {
+        int player = B.currentPlayer();
+        Score eval;
 
+        Score alpha = MIN_SCORE;
+        Score beta = MAX_SCORE;
 
-        for (int i = 0; i < L.length; i++) {
-            timer.checktime();
-
-            B.markColumn(L[i]);
-            Score val = AlphaBeta(B, MIN_SCORE, MAX_SCORE, depth - 1);
-
-            B.unmarkColumn();
-
-            ml[i] = new Move(L[i], val, B.currentPlayer(), B.M);
+        if (depth <= 0) {
+            return prevMl;
         }
 
-        return ml;
-	}
+        else if (player == 0) {
+            eval = MIN_SCORE;
+            for (int i = 0; i < prevMl.length; i++) {
+                timer.checktime();
+
+                if (prevMl[i].s.state == CXGameState.OPEN) {
+
+                    B.markColumn(prevMl[i].move);
+
+                    eval = max(eval, AlphaBeta(B, alpha, beta, depth - 1));
+                    alpha = max(eval, alpha);
+
+                    prevMl[i].s = eval; // update score value
+
+                    B.unmarkColumn();
+                }
+
+                if (beta.compareTo(alpha) <= 0) {
+                    break;
+                }
+            }
+
+        } else {
+            eval = MAX_SCORE;
+            for (int i = 0; i < prevMl.length; i++) {
+                timer.checktime();
+
+                if (prevMl[i].s.state == CXGameState.OPEN) {
+                    B.markColumn(prevMl[i].move);
+
+                    eval = min(eval, AlphaBeta(B, alpha, beta, depth - 1));
+                    beta = min(eval, beta);
+
+                    prevMl[i].s = eval; // update score value
+
+                    B.unmarkColumn();
+                }
+
+                if (beta.compareTo(alpha) <= 0) {
+                    break;
+                }
+            }
+        }
+        return prevMl;
+    }
 
 	private Score AlphaBeta(CXBoard B, Score alpha, Score beta, int depth) throws TimeoutException {
         CXGameState state = B.gameState();
