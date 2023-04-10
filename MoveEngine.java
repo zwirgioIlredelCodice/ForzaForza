@@ -51,11 +51,13 @@ public class MoveEngine {
                 } else {
                     Arrays.sort(ml);
                 }
-
+                
+                /*
                 move = ml[0].move;
                 for (Move m : ml) {
                     System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
                 }
+                */
 
                 System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {

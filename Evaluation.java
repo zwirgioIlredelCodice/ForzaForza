@@ -34,7 +34,7 @@ public class Evaluation {
 
     private int evaluateBoard() {
         int value = 0;
-        
+
         for (int i = 0; i < B.M; i++) {
             int j = getFirstPlayerCell(i);
             if (j != -1) {
@@ -74,10 +74,8 @@ public class Evaluation {
         int i = 0;
 
         for (i = 0; i < B.N; i++) {
-            if (board[colum][i] != CXCellState.FREE) break;
+            if (board[colum][i] != CXCellState.FREE) return i;
         }
-
-        if (board[colum][i] == playerCell) return i;
-        else return -1;
+        return -1;
     }
 }
