@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
 public class MoveEngine {
-    private int max_depth;
     private boolean debug;
 
     private MyTimer timer;
@@ -21,11 +20,9 @@ public class MoveEngine {
     private Score MIN_SCORE;
 
 
-    public MoveEngine(int max_depth, MyTimer timer, boolean debug) {
-        this.max_depth = max_depth;
+    public MoveEngine(MyTimer timer, boolean debug) {
         this.debug = debug;
         this.timer = timer;
-        this.evaluator = new Evaluation();
 
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
@@ -36,6 +33,8 @@ public class MoveEngine {
         Move[] ml = new Move[L.length];
         int move = 0;
         int player = B.currentPlayer();
+
+        int max_depth = B.numOfFreeCells();
 
         for (int i = 0; i < L.length; i++) { // inizializing move array
             ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), player, B.M);
@@ -54,10 +53,9 @@ public class MoveEngine {
                 }
 
                 move = ml[0].move;
-                /*
-                if (ml[0].s.state != CXGameState.OPEN && ml[0].s.state != CXGameState.DRAW) {
-                    return move;
-                }*/
+                for (Move m : ml) {
+                    System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
+                }
 
                 System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {
@@ -133,7 +131,8 @@ public class MoveEngine {
         Integer[] L = B.getAvailableColumns();
 
         if (depth <= 0 || state != CXGameState.OPEN) {
-            eval = evaluator.evaluate(B);
+            Evaluation evaluator = new Evaluation(B);
+            eval = evaluator.evaluate();
         }
 
         else if (player == 0) {
