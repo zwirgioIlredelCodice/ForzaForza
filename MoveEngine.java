@@ -18,7 +18,6 @@ public class MoveEngine {
     private Score MIN_SCORE;
 
     public MoveEngine(MyTimer timer) {
-        this.debug = debug;
         this.timer = timer;
 
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
@@ -49,19 +48,24 @@ public class MoveEngine {
                     Arrays.sort(ml);
                 }
 
-                /*
-                 * move = ml[0].move;
-                 * for (Move m : ml) {
-                 * System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
-                 * }
-                 */
+                move = ml[0].move;
 
                 System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {
                 System.err.format("tempo finito\n");
+
+                for (Move m : ml) {
+                    System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
+                }
+
                 return move;
             }
         }
+
+        for (Move m : ml) {
+            System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
+        }
+
         return move;
     }
 
