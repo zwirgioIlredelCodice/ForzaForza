@@ -133,7 +133,7 @@ public class MoveEngine {
         Integer[] L = B.getAvailableColumns();
 
         if (depth <= 0 || state != CXGameState.OPEN) {
-            Evaluation evaluator = new Evaluation(B);
+            Evaluation evaluator = new Evaluation(B, timer);
             eval = evaluator.evaluate();
         }
 
