@@ -13,7 +13,7 @@ public class Score implements Comparable {
     public int score;
     public CXGameState state;
 
-    public Score (int score, CXGameState state) {
+    public Score(int score, CXGameState state) {
         this.score = score;
         this.state = state;
     }
@@ -29,12 +29,11 @@ public class Score implements Comparable {
                     case DRAW:
                         return 0;
                     case WINP1:
-                        return -compareScore(this.score, nm.score); //prima la vittoria piu vicina
+                        return -compareScore(this.score, nm.score); // prima la vittoria piu vicina
                     case WINP2:
-                        return compareScore(this.score, nm.score); //prima la scofitta piu lontana
+                        return compareScore(this.score, nm.score); // prima la scofitta piu lontana
                 }
-            }
-            else {
+            } else {
                 return compareState(this.state, nm.state);
             }
         }
@@ -87,7 +86,7 @@ public class Score implements Comparable {
                     case WINP2:
                         return 0;
                 }
-            }
+        }
         return 0;
     }
 

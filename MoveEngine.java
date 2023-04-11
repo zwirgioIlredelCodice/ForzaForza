@@ -11,16 +11,13 @@ import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
 public class MoveEngine {
-    private boolean debug;
 
     private MyTimer timer;
-    private Evaluation evaluator;
 
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
-
-    public MoveEngine(MyTimer timer, boolean debug) {
+    public MoveEngine(MyTimer timer) {
         this.debug = debug;
         this.timer = timer;
 
@@ -51,13 +48,13 @@ public class MoveEngine {
                 } else {
                     Arrays.sort(ml);
                 }
-                
+
                 /*
-                move = ml[0].move;
-                for (Move m : ml) {
-                    System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
-                }
-                */
+                 * move = ml[0].move;
+                 * for (Move m : ml) {
+                 * System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
+                 * }
+                 */
 
                 System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {
@@ -125,7 +122,7 @@ public class MoveEngine {
         return prevMl;
     }
 
-	private Score AlphaBeta(CXBoard B, Score alpha, Score beta, int depth) throws TimeoutException {
+    private Score AlphaBeta(CXBoard B, Score alpha, Score beta, int depth) throws TimeoutException {
         CXGameState state = B.gameState();
         int player = B.currentPlayer();
         Score eval;
@@ -172,15 +169,19 @@ public class MoveEngine {
             }
         }
         return eval;
-	}
+    }
 
-	private Score max(Score a, Score b) {
-        if (a.compareTo(b) >= 0) return a;
-        else return b;
-	}
+    private Score max(Score a, Score b) {
+        if (a.compareTo(b) >= 0)
+            return a;
+        else
+            return b;
+    }
 
-	private Score min(Score a, Score b) {
-        if (a.compareTo(b) <= 0) return a;
-        else return b;
-	}
+    private Score min(Score a, Score b) {
+        if (a.compareTo(b) <= 0)
+            return a;
+        else
+            return b;
+    }
 }

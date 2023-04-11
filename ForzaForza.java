@@ -9,7 +9,6 @@ import java.util.Random;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
-
 public class ForzaForza implements CXPlayer {
 	private Random rand;
 	private CXGameState myWin;
@@ -24,11 +23,11 @@ public class ForzaForza implements CXPlayer {
 
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
 		// New random seed for each game
-		rand    = new Random(System.currentTimeMillis());
-		myWin   = first ? CXGameState.WINP1 : CXGameState.WINP2;
+		rand = new Random(System.currentTimeMillis());
+		myWin = first ? CXGameState.WINP1 : CXGameState.WINP2;
 		yourWin = first ? CXGameState.WINP2 : CXGameState.WINP1;
 		timer = new MyTimer(timeout_in_secs);
-		engine = new MoveEngine(timer, true); // max Integer.MAX_VALUE
+		engine = new MoveEngine(timer); // max Integer.MAX_VALUE
 	}
 
 	/**
@@ -43,7 +42,7 @@ public class ForzaForza implements CXPlayer {
 		timer.start();
 
 		Integer[] L = B.getAvailableColumns();
-		int save    = L[rand.nextInt(L.length)]; // Save a random column
+		int save = L[rand.nextInt(L.length)]; // Save a random column
 
 		try {
 			int col = engine.IterativeDepening(B);
@@ -54,9 +53,7 @@ public class ForzaForza implements CXPlayer {
 		}
 	}
 
-    public String playerName() {
+	public String playerName() {
 		return "ForzaForza";
 	}
 }
-
-

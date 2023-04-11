@@ -16,8 +16,9 @@ public class Move implements Comparable {
     }
 
     /*
-    mette a confronto 2 mosse dal punto di vista del giocatore che deve massimizzare
-    */
+     * mette a confronto 2 mosse dal punto di vista del giocatore che deve
+     * massimizzare
+     */
     public int compareTo(Object o) {
         if ((o != null) && (o instanceof Move)) {
             Move nm = (Move) o;
@@ -27,15 +28,20 @@ public class Move implements Comparable {
                 int halfRow = (int) Math.floor(this.M / 2);
 
                 int distanceA = Math.abs(this.move - halfRow);
-                int distanceB = Math.abs(nm.move   - halfRow);
+                int distanceB = Math.abs(nm.move - halfRow);
 
                 int cp = 0;
-                if (distanceA < distanceB) cp = 1;
-                else if (distanceA > distanceB) cp = -1;
-                else return cp = 0;
+                if (distanceA < distanceB)
+                    cp = 1;
+                else if (distanceA > distanceB)
+                    cp = -1;
+                else
+                    cp = 0;
 
-                if (player == 0) return cp;
-                else return -cp;
+                if (player == 0)
+                    return cp;
+                else
+                    return -cp;
             } else {
                 return compareScore;
             }

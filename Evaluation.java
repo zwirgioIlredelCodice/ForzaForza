@@ -24,7 +24,7 @@ public class Evaluation {
         this.B = B;
         this.board = B.getBoard();
         timer.checktime();
-        
+
         this.player = B.currentPlayer();
         this.state = B.gameState();
         CXCellState playerCell = player == 0 ? CXCellState.P1 : CXCellState.P2;
@@ -36,7 +36,7 @@ public class Evaluation {
         int value = evaluateBoard();
         Score s = new Score(value, state);
         return s;
-	}
+    }
 
     private int evaluateBoard() throws TimeoutException {
         int value = 0;
@@ -55,14 +55,15 @@ public class Evaluation {
         int i = 0;
         for (i = 0; i < B.N; i++) {
             timer.checktime();
-            if (board[colum][i] != CXCellState.FREE) return i;
+            if (board[colum][i] != CXCellState.FREE)
+                return i;
         }
         return -1;
     }
 
     private int possibleScore(int i, int j) throws TimeoutException {
         CXCellState s = board[i][j];
-		int n;
+        int n;
         int alreadyFilled;
 
         int score = 0;
@@ -71,66 +72,78 @@ public class Evaluation {
         int N = B.N;
         int X = B.X;
 
-		// Useless pedantic check
-		if (s == CXCellState.FREE)
-			return 0;
+        // Useless pedantic check
+        if (s == CXCellState.FREE)
+            return 0;
 
-		// Horizontal check
-		n = 1;
+        // Horizontal check
+        n = 1;
         alreadyFilled = 1;
-		for (int k = 1; j-k >= 0 && board[i][j-k] != notPlayerCell; k++) {
+        for (int k = 1; j - k >= 0 && board[i][j - k] != notPlayerCell; k++) {
             timer.checktime();
-            if (board[i][j-k] == s) alreadyFilled++;
+            if (board[i][j - k] == s)
+                alreadyFilled++;
             n++;
-        }// boardackward check
-		for (int k = 1; j+k <  N && board[i][j+k] != notPlayerCell; k++) {
+        } // boardackward check
+        for (int k = 1; j + k < N && board[i][j + k] != notPlayerCell; k++) {
             timer.checktime();
-            if (board[i][j+k] == s) alreadyFilled++;
+            if (board[i][j + k] == s)
+                alreadyFilled++;
             n++;
         } // forward check
-		if (n >= X) score += alreadyFilled;
+        if (n >= X)
+            score += alreadyFilled;
 
-		// Vertical check
-		n = 1;
+        // Vertical check
+        n = 1;
         alreadyFilled = 1;
-		for (int k = 1; i+k <  M && board[i+k][j] != notPlayerCell; k++) {
+        for (int k = 1; i + k < M && board[i + k][j] != notPlayerCell; k++) {
             timer.checktime();
-            if (board[i+k][j] == s) alreadyFilled++;
+            if (board[i + k][j] == s)
+                alreadyFilled++;
             n++;
         }
-		if (n >= X) score += alreadyFilled;
+        if (n >= X)
+            score += alreadyFilled;
 
-		// Diagonal check
-		n = 1;
+        // Diagonal check
+        n = 1;
         alreadyFilled = 1;
-		for (int k = 1; i-k >= 0 && j-k >= 0 && board[i-k][j-k] != notPlayerCell; k++) {
+        for (int k = 1; i - k >= 0 && j - k >= 0 && board[i - k][j - k] != notPlayerCell; k++) {
             timer.checktime();
-            if (board[i-k][j-k] == s) alreadyFilled++;
+            if (board[i - k][j - k] == s)
+                alreadyFilled++;
             n++;
         } // boardackward check
-		for (int k = 1; i+k <  M && j+k <  N && board[i+k][j+k] != notPlayerCell; k++) {
+        for (int k = 1; i + k < M && j + k < N && board[i + k][j + k] != notPlayerCell; k++) {
             timer.checktime();
-            if (board[i+k][j+k] == s) alreadyFilled++;
+            if (board[i + k][j + k] == s)
+                alreadyFilled++;
             n++;
         } // forward check
-		if (n >= X) score += alreadyFilled;
+        if (n >= X)
+            score += alreadyFilled;
 
-		// Anti-diagonal check
-		n = 1;
+        // Anti-diagonal check
+        n = 1;
         alreadyFilled = 1;
-		for (int k = 1; i-k >= 0 && j+k <  N && board[i-k][j+k] != notPlayerCell; k++) {
+        for (int k = 1; i - k >= 0 && j + k < N && board[i - k][j + k] != notPlayerCell; k++) {
             timer.checktime();
-            if (board[i-k][j+k] == s) alreadyFilled++;
+            if (board[i - k][j + k] == s)
+                alreadyFilled++;
             n++;
         } // boardackward check
-		for (int k = 1; i+k <  M && j-k >= 0 && board[i+k][j-k] != notPlayerCell; k++) {
+        for (int k = 1; i + k < M && j - k >= 0 && board[i + k][j - k] != notPlayerCell; k++) {
             timer.checktime();
-            if (board[i+k][j-k] == s) alreadyFilled++;
+            if (board[i + k][j - k] == s)
+                alreadyFilled++;
             n++;
         } // forward check
-		if (n >= X) score += alreadyFilled;
+        if (n >= X)
+            score += alreadyFilled;
 
-        if (s == CXCellState.P2) score = -score;
-		return score;
+        if (s == CXCellState.P2)
+            score = -score;
+        return score;
     }
 }
