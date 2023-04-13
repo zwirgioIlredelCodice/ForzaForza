@@ -29,9 +29,9 @@ public class Score implements Comparable {
                     case DRAW:
                         return 0;
                     case WINP1:
-                        return -compareScore(this.score, nm.score); // prima la vittoria piu vicina
+                        return 0;
                     case WINP2:
-                        return compareScore(this.score, nm.score); // prima la scofitta piu lontana
+                        return 0;
                 }
             } else {
                 return compareState(this.state, nm.state);
