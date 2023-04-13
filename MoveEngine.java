@@ -63,7 +63,7 @@ public class MoveEngine {
         }
 
         for (Move m : ml) {
-            System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
+            System.err.println(m);
         }
 
         return move;
