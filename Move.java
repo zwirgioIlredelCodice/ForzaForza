@@ -48,4 +48,9 @@ public class Move implements Comparable {
         }
         return -1;
     }
+
+    public String toString() {
+        String scoreString = s.toString();
+        return "Move col: " + move + "; player: " + player + "; score: { " + scoreString + " }"; 
+    }
 }

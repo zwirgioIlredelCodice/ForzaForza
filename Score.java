@@ -98,4 +98,23 @@ public class Score implements Comparable {
         else
             return 0;
     }
+
+    public String toString() {
+        String stateString = "";
+        switch (state) {
+            case OPEN:
+                stateString = "OPEN";
+                break;
+            case DRAW:
+                stateString = "DRAW";
+                break;
+            case WINP1:
+                stateString = "WINP1";
+                break;
+            case WINP2:
+                stateString = "WINP2";
+                break;
+        }
+        return "score: " + score + "; state: " + stateString + ";";
+    }
 }

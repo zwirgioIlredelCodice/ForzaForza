@@ -24,7 +24,7 @@ public class MoveEngine {
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
     }
 
-    public int IterativeDepening(CXBoard B) throws TimeoutException {
+    public int IterativeDepening(CXBoard B) {
         Integer[] L = B.getAvailableColumns();
         Move[] ml = new Move[L.length];
         int move = 0;
@@ -55,7 +55,7 @@ public class MoveEngine {
                 System.err.format("tempo finito\n");
 
                 for (Move m : ml) {
-                    System.err.format("Move col: %d, value: %d\n", m.move, (m.s).score);
+                    System.err.println(m);
                 }
 
                 return move;
