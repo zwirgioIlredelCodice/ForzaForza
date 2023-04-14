@@ -96,10 +96,6 @@ public class MoveEngine {
 
                     B.unmarkColumn();
                 }
-
-                if (beta.compareTo(alpha) <= 0) {
-                    break;
-                }
             }
 
         } else {
@@ -116,10 +112,6 @@ public class MoveEngine {
                     prevMl[i].s = eval; // update score value
 
                     B.unmarkColumn();
-                }
-
-                if (beta.compareTo(alpha) <= 0) {
-                    break;
                 }
             }
         }
