@@ -18,17 +18,31 @@ public class MoveEngine extends CXBoard {
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
+    private int[] firstcells = new int[N];
+
     public MoveEngine(int M, int N, int X, int timeout_in_secs) {
         super(M, N, X);
         this.timer = new MyTimer(timeout_in_secs);
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
+
+        for (int i = 0; i < N; i++) {
+            firstcells[i] = M;
+        }
     }
 
-    public void updateBoard(CXCell move) {
-        if (move != null) {
-            markColumn(move.j);
-        }
+    @Override
+    public CXGameState markColumn(int col) throws IndexOutOfBoundsException, IllegalStateException {
+        CXGameState ret = super.markColumn(col);
+        firstcells[col]--;
+        return ret;
+    }
+
+    @Override
+    public void unmarkColumn() throws IllegalStateException {
+        CXCell lastmove = getLastMove();
+        firstcells[lastmove.j]++;
+        super.unmarkColumn();
     }
 
     public int IterativeDepening() {
@@ -201,25 +215,16 @@ public class MoveEngine extends CXBoard {
     private int evaluateBoard() throws TimeoutException {
         int value = 0;
 
-        for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
             timer.checktime();
-            int j = getFirstPlayerCell(i);
-            if (j != -1) {
+            int i = firstcells[j];
+            if (i <  M) {
                 value += possibleScore(i, j);
             }
         }
         return value;
     }
 
-    private int getFirstPlayerCell(int colum) throws TimeoutException {
-        int i = 0;
-        for (i = 0; i < N; i++) {
-            timer.checktime();
-            if (B[colum][i] != CXCellState.FREE)
-                return i;
-        }
-        return -1;
-    }
 
     private int possibleScore(int i, int j) throws TimeoutException {
         CXCellState notPlayerCell = currentPlayer == 0 ? CXCellState.P2 : CXCellState.P1;
@@ -236,14 +241,14 @@ public class MoveEngine extends CXBoard {
         // Horizontal check
         n = 1;
         alreadyFilled = 1;
+        timer.checktime();
         for (int k = 1; j - k >= 0 && B[i][j - k] != notPlayerCell; k++) {
-            timer.checktime();
             if (B[i][j - k] == s)
                 alreadyFilled++;
             n++;
         } // boardackward check
+        timer.checktime();
         for (int k = 1; j + k < N && B[i][j + k] != notPlayerCell; k++) {
-            timer.checktime();
             if (B[i][j + k] == s)
                 alreadyFilled++;
             n++;
@@ -254,8 +259,8 @@ public class MoveEngine extends CXBoard {
         // Vertical check
         n = 1;
         alreadyFilled = 1;
+        timer.checktime();
         for (int k = 1; i + k < M && B[i + k][j] != notPlayerCell; k++) {
-            timer.checktime();
             if (B[i + k][j] == s)
                 alreadyFilled++;
             n++;
@@ -266,14 +271,14 @@ public class MoveEngine extends CXBoard {
         // Diagonal check
         n = 1;
         alreadyFilled = 1;
+        timer.checktime();
         for (int k = 1; i - k >= 0 && j - k >= 0 && B[i - k][j - k] != notPlayerCell; k++) {
-            timer.checktime();
             if (B[i - k][j - k] == s)
                 alreadyFilled++;
             n++;
         } // boardackward check
+        timer.checktime();
         for (int k = 1; i + k < M && j + k < N && B[i + k][j + k] != notPlayerCell; k++) {
-            timer.checktime();
             if (B[i + k][j + k] == s)
                 alreadyFilled++;
             n++;
@@ -284,14 +289,14 @@ public class MoveEngine extends CXBoard {
         // Anti-diagonal check
         n = 1;
         alreadyFilled = 1;
+        timer.checktime();
         for (int k = 1; i - k >= 0 && j + k < N && B[i - k][j + k] != notPlayerCell; k++) {
-            timer.checktime();
             if (B[i - k][j + k] == s)
                 alreadyFilled++;
             n++;
         } // boardackward check
+        timer.checktime();
         for (int k = 1; i + k < M && j - k >= 0 && B[i + k][j - k] != notPlayerCell; k++) {
-            timer.checktime();
             if (B[i + k][j - k] == s)
                 alreadyFilled++;
             n++;

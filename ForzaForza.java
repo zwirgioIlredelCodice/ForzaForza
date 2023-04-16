@@ -23,7 +23,7 @@ public class ForzaForza implements CXPlayer {
 	public int selectColumn(CXBoard B) {
 		CXCell lasmove = B.getLastMove();
 		if (lasmove != null) {
-			engine.updateBoard(lasmove);
+			engine.markColumn(lasmove.j);
 		}
 		int col = engine.IterativeDepening();
 		engine.markColumn(col);
