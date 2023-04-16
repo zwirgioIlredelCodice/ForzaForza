@@ -4,45 +4,56 @@ import connectx.CXPlayer;
 import connectx.CXBoard;
 import connectx.CXGameState;
 import connectx.CXCell;
+import connectx.CXCellState;
 import java.util.TreeSet;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
-public class MoveEngine {
+public class MoveEngine extends CXBoard {
 
     private MyTimer timer;
 
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
-    public MoveEngine(MyTimer timer) {
-        this.timer = timer;
-
+    public MoveEngine(int M, int N, int X, int timeout_in_secs) {
+        super(M, N, X);
+        this.timer = new MyTimer(timeout_in_secs);
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
     }
 
-    public int IterativeDepening(CXBoard B) {
-        Integer[] L = B.getAvailableColumns();
+    public void updateBoard(CXCell move) {
+        if (move != null) {
+            markColumn(move.j);
+        }
+    }
+
+    public int IterativeDepening() {
+        timer.start();
+
+        // for making the board in sync in case of TimeoutException
+        int sizeMC = MC.size();
+
+        Integer[] L = getAvailableColumns();
         Move[] ml = new Move[L.length];
         int move = 0;
-        int player = B.currentPlayer();
 
-        int max_depth = B.numOfFreeCells();
+        int max_depth = numOfFreeCells();
 
         for (int i = 0; i < L.length; i++) { // inizializing move array
-            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), player, B.M);
+            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, M);
         }
 
         int d = 1;
         for (d = 1; d <= max_depth; d++) {
             try {
 
-                ml = movelist(B, ml, d);
+                ml = movelist(ml, d);
 
-                if (player == 0) {
+                if (currentPlayer == 0) {
                     Arrays.sort(ml, Collections.reverseOrder());
                 } else {
                     Arrays.sort(ml);
@@ -54,6 +65,10 @@ public class MoveEngine {
             } catch (TimeoutException e) {
                 System.err.format("tempo finito\n");
 
+                // for making the board in sync in case of TimeoutException
+                while(MC.size() > sizeMC) {
+                    unmarkColumn();
+                }
                 for (Move m : ml) {
                     System.err.println(m);
                 }
@@ -69,8 +84,7 @@ public class MoveEngine {
         return move;
     }
 
-    private Move[] movelist(CXBoard B, Move[] prevMl, int depth) throws TimeoutException {
-        int player = B.currentPlayer();
+    private Move[] movelist(Move[] prevMl, int depth) throws TimeoutException {
         Score eval;
 
         Score alpha = MIN_SCORE;
@@ -80,21 +94,21 @@ public class MoveEngine {
             return prevMl;
         }
 
-        else if (player == 0) {
+        else if (currentPlayer == 0) {
             eval = MIN_SCORE;
             for (int i = 0; i < prevMl.length; i++) {
                 timer.checktime();
 
                 if (prevMl[i].s.state == CXGameState.OPEN) {
 
-                    B.markColumn(prevMl[i].move);
+                    markColumn(prevMl[i].move);
 
-                    eval = max(eval, AlphaBeta(B, alpha, beta, depth - 1));
+                    eval = max(eval, AlphaBeta(alpha, beta, depth - 1));
                     alpha = max(eval, alpha);
 
                     prevMl[i].s = eval; // update score value
 
-                    B.unmarkColumn();
+                    unmarkColumn();
                 }
             }
 
@@ -104,43 +118,40 @@ public class MoveEngine {
                 timer.checktime();
 
                 if (prevMl[i].s.state == CXGameState.OPEN) {
-                    B.markColumn(prevMl[i].move);
+                    markColumn(prevMl[i].move);
 
-                    eval = min(eval, AlphaBeta(B, alpha, beta, depth - 1));
+                    eval = min(eval, AlphaBeta(alpha, beta, depth - 1));
                     beta = min(eval, beta);
 
                     prevMl[i].s = eval; // update score value
 
-                    B.unmarkColumn();
+                    unmarkColumn();
                 }
             }
         }
         return prevMl;
     }
 
-    private Score AlphaBeta(CXBoard B, Score alpha, Score beta, int depth) throws TimeoutException {
-        CXGameState state = B.gameState();
-        int player = B.currentPlayer();
+    private Score AlphaBeta(Score alpha, Score beta, int depth) throws TimeoutException {
         Score eval;
 
-        Integer[] L = B.getAvailableColumns();
+        Integer[] L = getAvailableColumns();
 
-        if (depth <= 0 || state != CXGameState.OPEN) {
-            Evaluation evaluator = new Evaluation(B, timer);
-            eval = evaluator.evaluate();
+        if (depth <= 0 || gameState != CXGameState.OPEN) {
+            eval = evaluate();
         }
 
-        else if (player == 0) {
+        else if (currentPlayer == 0) {
             eval = MIN_SCORE;
             for (int i : L) {
                 timer.checktime();
 
-                B.markColumn(i);
+                markColumn(i);
 
-                eval = max(eval, AlphaBeta(B, alpha, beta, depth - 1));
+                eval = max(eval, AlphaBeta(alpha, beta, depth - 1));
                 alpha = max(eval, alpha);
 
-                B.unmarkColumn();
+                unmarkColumn();
 
                 if (beta.compareTo(alpha) <= 0) {
                     break;
@@ -152,12 +163,12 @@ public class MoveEngine {
             for (int i : L) {
                 timer.checktime();
 
-                B.markColumn(i);
+                markColumn(i);
 
-                eval = min(eval, AlphaBeta(B, alpha, beta, depth - 1));
+                eval = min(eval, AlphaBeta(alpha, beta, depth - 1));
                 beta = min(eval, beta);
 
-                B.unmarkColumn();
+                unmarkColumn();
 
                 if (beta.compareTo(alpha) <= 0) {
                     break;
@@ -179,5 +190,117 @@ public class MoveEngine {
             return a;
         else
             return b;
+    }
+
+    public Score evaluate() throws TimeoutException {
+        int value = evaluateBoard();
+        Score s = new Score(value, gameState);
+        return s;
+    }
+
+    private int evaluateBoard() throws TimeoutException {
+        int value = 0;
+
+        for (int i = 0; i < M; i++) {
+            timer.checktime();
+            int j = getFirstPlayerCell(i);
+            if (j != -1) {
+                value += possibleScore(i, j);
+            }
+        }
+        return value;
+    }
+
+    private int getFirstPlayerCell(int colum) throws TimeoutException {
+        int i = 0;
+        for (i = 0; i < N; i++) {
+            timer.checktime();
+            if (B[colum][i] != CXCellState.FREE)
+                return i;
+        }
+        return -1;
+    }
+
+    private int possibleScore(int i, int j) throws TimeoutException {
+        CXCellState notPlayerCell = currentPlayer == 0 ? CXCellState.P2 : CXCellState.P1;
+        CXCellState s = B[i][j];
+        int n;
+        int alreadyFilled;
+
+        int score = 0;
+
+        // Useless pedantic check
+        if (s == CXCellState.FREE)
+            return 0;
+
+        // Horizontal check
+        n = 1;
+        alreadyFilled = 1;
+        for (int k = 1; j - k >= 0 && B[i][j - k] != notPlayerCell; k++) {
+            timer.checktime();
+            if (B[i][j - k] == s)
+                alreadyFilled++;
+            n++;
+        } // boardackward check
+        for (int k = 1; j + k < N && B[i][j + k] != notPlayerCell; k++) {
+            timer.checktime();
+            if (B[i][j + k] == s)
+                alreadyFilled++;
+            n++;
+        } // forward check
+        if (n >= X)
+            score += alreadyFilled;
+
+        // Vertical check
+        n = 1;
+        alreadyFilled = 1;
+        for (int k = 1; i + k < M && B[i + k][j] != notPlayerCell; k++) {
+            timer.checktime();
+            if (B[i + k][j] == s)
+                alreadyFilled++;
+            n++;
+        }
+        if (n >= X)
+            score += alreadyFilled;
+
+        // Diagonal check
+        n = 1;
+        alreadyFilled = 1;
+        for (int k = 1; i - k >= 0 && j - k >= 0 && B[i - k][j - k] != notPlayerCell; k++) {
+            timer.checktime();
+            if (B[i - k][j - k] == s)
+                alreadyFilled++;
+            n++;
+        } // boardackward check
+        for (int k = 1; i + k < M && j + k < N && B[i + k][j + k] != notPlayerCell; k++) {
+            timer.checktime();
+            if (B[i + k][j + k] == s)
+                alreadyFilled++;
+            n++;
+        } // forward check
+        if (n >= X)
+            score += alreadyFilled;
+
+        // Anti-diagonal check
+        n = 1;
+        alreadyFilled = 1;
+        for (int k = 1; i - k >= 0 && j + k < N && B[i - k][j + k] != notPlayerCell; k++) {
+            timer.checktime();
+            if (B[i - k][j + k] == s)
+                alreadyFilled++;
+            n++;
+        } // boardackward check
+        for (int k = 1; i + k < M && j - k >= 0 && B[i + k][j - k] != notPlayerCell; k++) {
+            timer.checktime();
+            if (B[i + k][j - k] == s)
+                alreadyFilled++;
+            n++;
+        } // forward check
+        if (n >= X)
+            score += alreadyFilled;
+
+        if (s == CXCellState.P2)
+            score = -score;
+        return score;
     }
 }
