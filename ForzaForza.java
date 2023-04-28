@@ -12,6 +12,11 @@ public class ForzaForza implements CXPlayer {
 	public ForzaForza() {
 	}
 
+	public static void main(String[] args) {
+		ForzaForza obj = new ForzaForza();
+		obj.perftest();
+	}
+
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
 		engine = new MoveEngine(M, N, K, timeout_in_secs);
 	}
@@ -28,5 +33,11 @@ public class ForzaForza implements CXPlayer {
 
 	public String playerName() {
 		return "ForzaForza";
+	}
+
+	public void perftest() {
+		engine = new MoveEngine(6, 7, 4, 10);
+
+		engine.IterativeDepening();
 	}
 }

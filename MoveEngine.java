@@ -15,6 +15,9 @@ public class MoveEngine extends CXBoard {
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
+    private int perft = 0;
+    private int cutoff = 0;
+
     private int[] firstcells = new int[N];
 
     public MoveEngine(int M, int N, int X, int timeout_in_secs) {
@@ -55,7 +58,7 @@ public class MoveEngine extends CXBoard {
         int max_depth = numOfFreeCells();
 
         for (int i = 0; i < L.length; i++) { // inizializing move array
-            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, M);
+            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, M, 0, 0, 0);
         }
 
         int d = 1;
@@ -112,12 +115,18 @@ public class MoveEngine extends CXBoard {
 
                 if (prevMl[i].s.state == CXGameState.OPEN) {
 
+                    perft = 0;
+                    cutoff = 0;
+
                     markColumn(prevMl[i].move);
 
                     eval = max(eval, AlphaBeta(alpha, beta, depth - 1));
                     alpha = max(eval, alpha);
 
                     prevMl[i].s = eval; // update score value
+                    prevMl[i].depth = depth;
+                    prevMl[i].nodes = perft;
+                    prevMl[i].cutoff = cutoff;
 
                     unmarkColumn();
                 }
@@ -129,12 +138,19 @@ public class MoveEngine extends CXBoard {
                 timer.checktime();
 
                 if (prevMl[i].s.state == CXGameState.OPEN) {
+
+                    perft = 0;
+                    cutoff = 0;
+
                     markColumn(prevMl[i].move);
 
                     eval = min(eval, AlphaBeta(alpha, beta, depth - 1));
                     beta = min(eval, beta);
 
                     prevMl[i].s = eval; // update score value
+                    prevMl[i].depth = depth;
+                    prevMl[i].nodes = perft;
+                    prevMl[i].cutoff = cutoff;
 
                     unmarkColumn();
                 }
@@ -150,6 +166,7 @@ public class MoveEngine extends CXBoard {
 
         if (depth <= 0 || gameState != CXGameState.OPEN) {
             eval = evaluate();
+            perft++;
         }
 
         else if (currentPlayer == 0) {
@@ -165,6 +182,7 @@ public class MoveEngine extends CXBoard {
                 unmarkColumn();
 
                 if (beta.compareTo(alpha) <= 0) {
+                    cutoff++;
                     break;
                 }
             }
@@ -182,6 +200,7 @@ public class MoveEngine extends CXBoard {
                 unmarkColumn();
 
                 if (beta.compareTo(alpha) <= 0) {
+                    cutoff++;
                     break;
                 }
             }
