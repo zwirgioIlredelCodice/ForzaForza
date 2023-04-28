@@ -2,11 +2,7 @@ package connectx.ForzaForza;
 
 import connectx.CXPlayer;
 import connectx.CXBoard;
-import connectx.CXGameState;
 import connectx.CXCell;
-import java.util.TreeSet;
-import java.util.Arrays;
-import java.util.concurrent.TimeoutException;
 
 public class ForzaForza implements CXPlayer {
 

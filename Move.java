@@ -1,7 +1,5 @@
 package connectx.ForzaForza;
 
-import connectx.CXGameState;
-
 public class Move implements Comparable {
     public Score s;
     public int move;
