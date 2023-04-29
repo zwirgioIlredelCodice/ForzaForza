@@ -12,37 +12,44 @@ public class MoveEngine extends CXBoard {
 
     private MyTimer timer;
 
+    private BitBoard bitBoard;
+
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
-    private int perft = 0;
-    private int cutoff = 0;
-
-    private int[] firstcells = new int[N];
+    private int perft;
+    private int cutoff;
 
     public MoveEngine(int M, int N, int X, int timeout_in_secs) {
         super(M, N, X);
+
         this.timer = new MyTimer(timeout_in_secs);
+        bitBoard = new BitBoard(M, N);
+
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
 
-        for (int i = 0; i < N; i++) {
-            firstcells[i] = M;
-        }
+        perft = 0;
+        cutoff = 0;
     }
 
     @Override
     public CXGameState markColumn(int col) throws IndexOutOfBoundsException, IllegalStateException {
+        int pl = currentPlayer;
         CXGameState ret = super.markColumn(col);
-        firstcells[col]--;
+
+        CXCell lastmove = getLastMove();
+        bitBoard.markBit(lastmove.i, lastmove.j, pl);
+
         return ret;
     }
 
     @Override
     public void unmarkColumn() throws IllegalStateException {
+        
         CXCell lastmove = getLastMove();
-        firstcells[lastmove.j]++;
         super.unmarkColumn();
+        bitBoard.markBit(lastmove.i, lastmove.j, currentPlayer);
     }
 
     public int IterativeDepening() {
@@ -233,7 +240,7 @@ public class MoveEngine extends CXBoard {
 
         for (int j = 0; j < N; j++) {
             timer.checktime();
-            int i = firstcells[j];
+            int i = RP[j] + 1;
             if (i <  M) {
                 value += possibleScore(i, j);
             }
