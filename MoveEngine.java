@@ -4,6 +4,8 @@ import connectx.CXBoard;
 import connectx.CXGameState;
 import connectx.CXCell;
 import connectx.CXCellState;
+
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
@@ -13,6 +15,7 @@ public class MoveEngine extends CXBoard {
     private MyTimer timer;
 
     private BitBoard bitBoard;
+    private CacheTable <BigInteger, Score> table;
 
     private Score MAX_SCORE;
     private Score MIN_SCORE;
@@ -25,6 +28,7 @@ public class MoveEngine extends CXBoard {
 
         this.timer = new MyTimer(timeout_in_secs);
         bitBoard = new BitBoard(M, N);
+        table = new CacheTable<BigInteger, Score>();
 
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
@@ -71,6 +75,7 @@ public class MoveEngine extends CXBoard {
         int d = 1;
         for (d = 1; d <= max_depth; d++) {
             try {
+                table.reset();
 
                 ml = movelist(ml, d);
 
@@ -171,6 +176,11 @@ public class MoveEngine extends CXBoard {
 
         Integer[] L = getAvailableColumns();
 
+        eval = table.get(bitBoard.getKey());
+        if (eval != null) {
+            return eval;
+        }
+
         if (depth <= 0 || gameState != CXGameState.OPEN) {
             eval = evaluate();
             perft++;
@@ -212,6 +222,8 @@ public class MoveEngine extends CXBoard {
                 }
             }
         }
+        table.put(bitBoard.getKey(), eval);
+
         return eval;
     }
 

@@ -16,6 +16,7 @@ public class CacheTable <K, V> {
     }
 
     private int hash(K key) {
+        System.err.println(key.hashCode());
         return key.hashCode() % size;
     }
 
@@ -33,6 +34,10 @@ public class CacheTable <K, V> {
             return data.value;
         }
         return null;
+    }
+
+    public void reset() {
+        this.table = new Data[size];
     }
 }
 
