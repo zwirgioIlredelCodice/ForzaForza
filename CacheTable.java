@@ -1,7 +1,7 @@
 package connectx.ForzaForza;
 
 public class CacheTable <K, V> {
-    private static final int DEFAULT_SIZE = 10000;
+    private static final int DEFAULT_SIZE = 50000;
     
     private int size;
     private Data <K, V>[] table;
@@ -16,22 +16,26 @@ public class CacheTable <K, V> {
     }
 
     private int hash(K key) {
-        System.err.println(key.hashCode());
-        return key.hashCode() % size;
+        int hc = key.hashCode();
+        int rem = hc % size;
+        return Math.abs(rem);
     }
 
     public void put(K key, V value) {
         int index = hash(key);
-        Data <K, V> data = table[index];
-        data.key = key;
-        data.value = value;
+        Data <K, V> data = new Data <K, V> (key, value);
+        table[index] = data;
     }
 
     public V get(K key) {
         int index = hash(key);
         Data <K, V> data = table[index];
-        if (data.key.equals(key)) {
-            return data.value;
+        
+        if (data != null) {
+            if (data.key.equals(key)) {
+                return data.value;
+            }
+            return null;
         }
         return null;
     }
