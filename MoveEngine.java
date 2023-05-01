@@ -15,26 +15,28 @@ public class MoveEngine extends CXBoard {
     private MyTimer timer;
 
     private BitBoard bitBoard;
-    private CacheTable <BigInteger, Score> table;
+    private CacheTable table;
 
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
     private int perft;
     private int cutoff;
+    private int hit;
 
     public MoveEngine(int M, int N, int X, int timeout_in_secs) {
         super(M, N, X);
 
         this.timer = new MyTimer(timeout_in_secs);
         bitBoard = new BitBoard(M, N);
-        table = new CacheTable<BigInteger, Score>();
+        table = new CacheTable();
 
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
 
         perft = 0;
         cutoff = 0;
+        hit = 0;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class MoveEngine extends CXBoard {
         int max_depth = numOfFreeCells();
 
         for (int i = 0; i < L.length; i++) { // inizializing move array
-            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, M, 0, 0, 0);
+            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, M, 0, 0, 0, 0);
         }
 
         int d = 1;
@@ -129,6 +131,7 @@ public class MoveEngine extends CXBoard {
 
                     perft = 0;
                     cutoff = 0;
+                    hit = 0;
 
                     markColumn(prevMl[i].move);
 
@@ -139,6 +142,7 @@ public class MoveEngine extends CXBoard {
                     prevMl[i].depth = depth;
                     prevMl[i].nodes = perft;
                     prevMl[i].cutoff = cutoff;
+                    prevMl[i].hit = hit;
 
                     unmarkColumn();
                 }
@@ -153,6 +157,7 @@ public class MoveEngine extends CXBoard {
 
                     perft = 0;
                     cutoff = 0;
+                    hit = 0;
 
                     markColumn(prevMl[i].move);
 
@@ -163,6 +168,7 @@ public class MoveEngine extends CXBoard {
                     prevMl[i].depth = depth;
                     prevMl[i].nodes = perft;
                     prevMl[i].cutoff = cutoff;
+                    prevMl[i].hit = hit;
 
                     unmarkColumn();
                 }
@@ -178,6 +184,7 @@ public class MoveEngine extends CXBoard {
 
         eval = table.get(bitBoard.getKey());
         if (eval != null) {
+            hit++;
             return eval;
         }
 

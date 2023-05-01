@@ -1,10 +1,12 @@
 package connectx.ForzaForza;
 
-public class CacheTable <K, V> {
+import java.math.BigInteger;
+
+public class CacheTable {
     private static final int DEFAULT_SIZE = 50000;
     
     private int size;
-    private Data <K, V>[] table;
+    private Data [] table;
 
     public CacheTable() {
         this(DEFAULT_SIZE);
@@ -15,21 +17,21 @@ public class CacheTable <K, V> {
         this.table = new Data[size];
     }
 
-    private int hash(K key) {
+    private int hash(BigInteger key) {
         int hc = key.hashCode();
         int rem = hc % size;
         return Math.abs(rem);
     }
 
-    public void put(K key, V value) {
+    public void put(BigInteger key, Score value) {
         int index = hash(key);
-        Data <K, V> data = new Data <K, V> (key, value);
+        Data data = new Data(key, value);
         table[index] = data;
     }
 
-    public V get(K key) {
+    public Score get(BigInteger key) {
         int index = hash(key);
-        Data <K, V> data = table[index];
+        Data data = table[index];
         
         if (data != null) {
             if (data.key.equals(key)) {
@@ -45,15 +47,15 @@ public class CacheTable <K, V> {
     }
 }
 
-class Data <K, V> {
-    public K key;
-    public V value;
+class Data {
+    public BigInteger key;
+    public Score value;
 
     public Data() {
         this(null, null);
     }
 
-    public Data(K key, V value) {
+    public Data(BigInteger key, Score value) {
         this.key = key;
         this.value = value;
     }

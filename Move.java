@@ -9,8 +9,9 @@ public class Move implements Comparable {
     public int depth;
     public int nodes;
     public int cutoff;
+    public int hit;
 
-    public Move(int move, Score s, int player, int M,int depth, int nodes, int cutoff) {
+    public Move(int move, Score s, int player, int M,int depth, int nodes, int cutoff, int hit) {
         this.s = s;
         this.move = move;
         this.player = player;
@@ -18,6 +19,7 @@ public class Move implements Comparable {
         this.depth = depth;
         this.nodes = nodes;
         this.cutoff = cutoff;
+        this.hit = hit;
     }
 
     /*
@@ -57,6 +59,6 @@ public class Move implements Comparable {
     public String toString() {
         String scoreString = s.toString();
         double rfactor = (nodes / Math.pow(M, depth)) * 100;
-        return "Move col: " + move + "; player: " + player + "; score: { " + scoreString + " };\tperf: { d: " + depth + " n: " + nodes + " cut: " + cutoff + " rfator: " + rfactor + "% }"; 
+        return "Move col: " + move + "; player: " + player + "; score: { " + scoreString + " };\tperf: { d: " + depth + " n: " + nodes + " cut: " + cutoff + " rfator: " + rfactor + "% hit " + hit + " }"; 
     }
 }
