@@ -2,7 +2,7 @@ package connectx.ForzaForza;
 
 import connectx.CXGameState;
 
-public class Score implements Comparable {
+public class Score implements Comparable<Score> {
     public int score;
     public CXGameState state;
 
@@ -11,26 +11,24 @@ public class Score implements Comparable {
         this.state = state;
     }
 
-    public int compareTo(Object o) {
-        if ((o != null) && (o instanceof Score)) {
-            Score nm = (Score) o;
-
-            if (this.state == nm.state) {
-                switch (this.state) {
-                    case OPEN:
-                        return compareScore(this.score, nm.score);
-                    case DRAW:
-                        return 0;
-                    case WINP1:
-                        return 0;
-                    case WINP2:
-                        return 0;
-                }
-            } else {
-                return compareState(this.state, nm.state);
+    public int compareTo(Score s) {
+        if (this.state == s.state) {
+            switch (this.state) {
+                case OPEN:
+                    return compareScore(this.score, s.score);
+                case DRAW:
+                    return 0;
+                case WINP1:
+                    return 0;
+                case WINP2:
+                    return 0;
+                default:
+                    return 0;
             }
+        } else {
+            return compareState(this.state, s.state);
         }
-        return -1;
+
     }
 
     private int compareState(CXGameState s1, CXGameState s2) {
@@ -45,6 +43,8 @@ public class Score implements Comparable {
                         return -1;
                     case WINP2:
                         return 1;
+                    default:
+                        return 0;
                 }
             case DRAW:
                 switch (s2) {
@@ -56,6 +56,8 @@ public class Score implements Comparable {
                         return -1;
                     case WINP2:
                         return 1;
+                    default:
+                        return 0;
                 }
             case WINP1:
                 switch (s2) {
@@ -67,6 +69,8 @@ public class Score implements Comparable {
                         return 0;
                     case WINP2:
                         return 1;
+                    default:
+                        return 0;
                 }
             case WINP2:
                 switch (s2) {
@@ -77,6 +81,8 @@ public class Score implements Comparable {
                     case WINP1:
                         return -1;
                     case WINP2:
+                        return 0;
+                    default:
                         return 0;
                 }
         }

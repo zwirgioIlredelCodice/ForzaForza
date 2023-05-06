@@ -5,7 +5,6 @@ import connectx.CXGameState;
 import connectx.CXCell;
 import connectx.CXCellState;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
