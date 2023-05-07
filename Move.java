@@ -4,18 +4,18 @@ public class Move implements Comparable<Move> {
     public Score s;
     public int move;
     private int player;
-    private int M; // righe massime
+    private int N; // righe massime
 
     public int depth;
     public int nodes;
     public int cutoff;
     public int hit;
 
-    public Move(int move, Score s, int player, int M, int depth, int nodes, int cutoff, int hit) {
+    public Move(int move, Score s, int player, int N, int depth, int nodes, int cutoff, int hit) {
         this.s = s;
         this.move = move;
         this.player = player;
-        this.M = M;
+        this.N = N;
         this.depth = depth;
         this.nodes = nodes;
         this.cutoff = cutoff;
@@ -53,7 +53,7 @@ public class Move implements Comparable<Move> {
         }
 
         if (compareScore == 0) {
-            int halfRow = (int) Math.floor(this.M / 2);
+            int halfRow = (int) Math.floor(this.N / 2);
 
             int distanceA = Math.abs(this.move - halfRow);
             int distanceB = Math.abs(m.move - halfRow);
@@ -77,7 +77,7 @@ public class Move implements Comparable<Move> {
 
     public String toString() {
         String scoreString = s.toString();
-        double rfactor = (nodes / Math.pow(M, depth)) * 100;
+        double rfactor = (nodes / Math.pow(N, depth)) * 100;
         return "Move col: " + move + "; player: " + player + "; score: { " + scoreString + " };\tperf: { d: " + depth
                 + " n: " + nodes + " cut: " + cutoff + " rfator: " + rfactor + "% hit " + hit + " }";
     }

@@ -7,6 +7,7 @@ import connectx.CXCellState;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.TimeoutException;
 
 public class MoveEngine extends CXBoard {
@@ -72,7 +73,7 @@ public class MoveEngine extends CXBoard {
         int max_depth = numOfFreeCells();
 
         for (int i = 0; i < L.length; i++) { // inizializing move array
-            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, M, 0, 0, 0, 0);
+            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, N, 0, 0, 0, 0);
         }
 
         int d = 1;
@@ -193,6 +194,19 @@ public class MoveEngine extends CXBoard {
         }
 
         Integer[] L = getAvailableColumns();
+
+        // riordina le mosse in modo da controllare prima le mosse più vicine al centro
+        Arrays.sort(L, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                int halfRow = (int) Math.floor(N / 2);
+
+                int distanceA = Math.abs(a - halfRow);
+                int distanceB = Math.abs(b - halfRow);
+
+                return distanceA - distanceB;
+            }
+        });
 
         if (depth <= 0 || gameState != CXGameState.OPEN) {
             eval = evaluate();

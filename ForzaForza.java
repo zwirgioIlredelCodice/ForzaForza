@@ -21,7 +21,7 @@ public class ForzaForza implements CXPlayer {
 		boolean exit = false;
 
 		while (!exit) {
-			System.out.println("1. test\n2. extreme test\n0. exit\n============");
+			System.out.println("============\n1. test\n2. extreme test\n0. exit\n============");
 			int choice = s.nextInt();
 			switch (choice) {
 				case 0:
