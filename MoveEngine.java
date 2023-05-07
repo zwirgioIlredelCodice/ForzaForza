@@ -19,6 +19,8 @@ public class MoveEngine extends CXBoard {
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
+    final boolean debug = true;
+
     private int perft;
     private int cutoff;
     private int hit;
@@ -90,22 +92,27 @@ public class MoveEngine extends CXBoard {
 
                 System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {
-                System.err.format("tempo finito\n");
+                System.err.format("time finished\n");
 
                 // for making the board in sync in case of TimeoutException
                 while(MC.size() > sizeMC) {
                     unmarkColumn();
                 }
-                for (Move m : ml) {
-                    System.err.println(m);
+                
+                if (debug) {
+                    for (Move m : ml) {
+                        System.err.println(m);
+                    }
                 }
 
                 return move;
             }
         }
 
-        for (Move m : ml) {
-            System.err.println(m);
+        if (debug) {
+            for (Move m : ml) {
+                System.err.println(m);
+            }
         }
 
         return move;
@@ -177,15 +184,15 @@ public class MoveEngine extends CXBoard {
     }
 
     private Score AlphaBeta(Score alpha, Score beta, int depth) throws TimeoutException {
+        
         Score eval;
-
-        Integer[] L = getAvailableColumns();
-
         eval = table.get(bitBoard.getKey());
         if (eval != null) {
             hit++;
             return eval;
         }
+
+        Integer[] L = getAvailableColumns();
 
         if (depth <= 0 || gameState != CXGameState.OPEN) {
             eval = evaluate();
