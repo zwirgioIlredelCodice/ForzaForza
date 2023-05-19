@@ -17,6 +17,8 @@ public class MoveEngine extends CXBoard {
     private BitBoard bitBoard;
     private CacheTable table;
 
+    private ScoreBoard scoreBoard;
+
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
@@ -32,6 +34,7 @@ public class MoveEngine extends CXBoard {
         this.timer = new MyTimer(timeout_in_secs);
         bitBoard = new BitBoard(M, N);
         table = new CacheTable();
+        scoreBoard = new ScoreBoard(M, N, X);
 
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
@@ -48,6 +51,7 @@ public class MoveEngine extends CXBoard {
 
         CXCell lastmove = getLastMove();
         bitBoard.markBit(lastmove.i, lastmove.j, pl);
+        scoreBoard.move(lastmove.i, lastmove.j, pl);
 
         return ret;
     }
@@ -58,6 +62,7 @@ public class MoveEngine extends CXBoard {
         CXCell lastmove = getLastMove();
         super.unmarkColumn();
         bitBoard.markBit(lastmove.i, lastmove.j, currentPlayer);
+        scoreBoard.unmove(lastmove.i, lastmove.j, currentPlayer);
     }
 
     public int IterativeDepening() {
@@ -184,6 +189,32 @@ public class MoveEngine extends CXBoard {
         return prevMl;
     }
 
+    private Integer[] fastSort(Integer[] L) {
+        Integer[] out = new Integer[L.length];
+        Move[] ma = new Move[L.length];
+
+        if (gameState != CXGameState.OPEN) {
+            return L;
+        }
+        for (int index = 0; index < L.length; index++) {
+            this.markColumn(L[index]);
+            Score s = new Score(scoreBoard.totalScore, gameState);
+            ma[index] = new Move(L[index], s, currentPlayer, N);
+            this.unmarkColumn();
+        }
+
+        if (currentPlayer == 0) {
+            Arrays.sort(ma, Collections.reverseOrder());
+        } else {
+            Arrays.sort(ma);
+        }
+
+        for (int index = 0; index < L.length; index++) {
+            out[index] = ma[index].move;
+        }
+        return out;
+    }
+
     private Score AlphaBeta(Score alpha, Score beta, int depth) throws TimeoutException {
         
         Score eval;
@@ -196,7 +227,8 @@ public class MoveEngine extends CXBoard {
         Integer[] L = getAvailableColumns();
 
         // riordina le mosse in modo da controllare prima le mosse più vicine al centro
-        Arrays.sort(L, new Comparator<Integer>() {
+        L = fastSort(L);
+        /*Arrays.sort(L, new Comparator<Integer>() {
             @Override
             public int compare(Integer a, Integer b) {
                 int halfRow = (int) Math.floor(N / 2);
@@ -206,7 +238,7 @@ public class MoveEngine extends CXBoard {
 
                 return distanceA - distanceB;
             }
-        });
+        });*/
 
         if (depth <= 0 || gameState != CXGameState.OPEN) {
             eval = evaluate();
@@ -269,7 +301,7 @@ public class MoveEngine extends CXBoard {
     }
 
     public Score evaluate() throws TimeoutException {
-        int value = evaluateBoard();
+        int value = scoreBoard.totalScore;//evaluateBoard();
         Score s = new Score(value, gameState);
         return s;
     }

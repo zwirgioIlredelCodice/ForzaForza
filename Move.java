@@ -22,6 +22,17 @@ public class Move implements Comparable<Move> {
         this.hit = hit;
     }
 
+    public Move(int move, Score s, int player, int N) {
+        this.s = s;
+        this.move = move;
+        this.player = player;
+        this.N = N;
+        this.depth = 0;
+        this.nodes = 0;
+        this.cutoff = 0;
+        this.hit = 0;
+    }
+
     /*
     private int compareDepth(int d1, int d2) {
         if (d1 == d2) return 0;
