@@ -34,35 +34,12 @@ public class Move implements Comparable<Move> {
     }
 
     /*
-    private int compareDepth(int d1, int d2) {
-        if (d1 == d2) return 0;
-        else if (d1 < d2) return -1;
-        else return 1;
-    }
-    */
-    /*
      * mette a confronto 2 mosse dal punto di vista del giocatore che deve
      * massimizzare
      */
     public int compareTo(Move m) {
 
         int compareScore = this.s.compareTo(m.s);
-        /*int compareD = compareDepth(this.depth, m.depth);
-        if (compareScore == 0) {
-            switch (this.s.state) {
-                case OPEN:
-                    break;
-                case DRAW:
-                    compareScore = -compareD;
-                    break;
-                case WINP1:
-                    compareScore = compareD;
-                    break;
-                case WINP2:
-                    compareScore = -compareD;
-                    break;
-            }
-        }*/
 
         if (compareScore == 0) {
             int halfRow = (int) Math.floor(this.N / 2);
