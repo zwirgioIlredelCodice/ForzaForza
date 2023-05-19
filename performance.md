@@ -70,3 +70,26 @@
 ----------
 
 
+## 2023-05-1
+
+### engine = new MoveEngine(6, 7, 4, 10) **all** (table 5000)
+
+    depth: 1, time: 2
+    depth: 2, time: 34
+    depth: 3, time: 38
+    depth: 4, time: 44
+    depth: 5, time: 50
+    depth: 6, time: 54
+    depth: 7, time: 84
+    depth: 8, time: 164
+    depth: 9, time: 330
+    depth: 10, time: 836
+    depth: 11, time: 2882
+    tempo finito
+    Move col: 3; player: 0; score: { score: -1; state: OPEN; };     perf: { d: 12 n: 1458726 cut: 751715 rfator: 0.06701294731564746% hit 748734 }
+    Move col: 2; player: 0; score: { score: -1; state: OPEN; };     perf: { d: 12 n: 530357 cut: 284820 rfator: 0.02436426422747304% hit 263349 }
+    Move col: 4; player: 0; score: { score: -1; state: OPEN; };     perf: { d: 12 n: 712303 cut: 384605 rfator: 0.03272274807727951% hit 386446 }
+    Move col: 5; player: 0; score: { score: 2; state: OPEN; };      perf: { d: 11 n: 186956 cut: 75901 rfator: 0.05153184043478015% hit 91944 }
+    Move col: 1; player: 0; score: { score: 2; state: OPEN; };      perf: { d: 11 n: 84412 cut: 35454 rfator: 0.023267002475345334% hit 38395 }
+    Move col: 6; player: 0; score: { score: 2; state: OPEN; };      perf: { d: 11 n: 143300 cut: 60353 rfator: 0.03949866671464941% hit 69322 }
+    Move col: 0; player: 0; score: { score: 2; state: OPEN; };      perf: { d: 11 n: 78207 cut: 32928 rfator: 0.021556679886619586% hit 36561 }

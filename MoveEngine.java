@@ -4,45 +4,60 @@ import connectx.CXBoard;
 import connectx.CXGameState;
 import connectx.CXCell;
 import connectx.CXCellState;
+
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.TimeoutException;
 
 public class MoveEngine extends CXBoard {
 
     private MyTimer timer;
 
+    private BitBoard bitBoard;
+    private CacheTable table;
+
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
-    private int perft = 0;
-    private int cutoff = 0;
+    final boolean debug = true;
 
-    private int[] firstcells = new int[N];
+    private int perft;
+    private int cutoff;
+    private int hit;
 
     public MoveEngine(int M, int N, int X, int timeout_in_secs) {
         super(M, N, X);
+
         this.timer = new MyTimer(timeout_in_secs);
+        bitBoard = new BitBoard(M, N);
+        table = new CacheTable();
+
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
         MIN_SCORE = new Score(Integer.MIN_VALUE, CXGameState.WINP2);
 
-        for (int i = 0; i < N; i++) {
-            firstcells[i] = M;
-        }
+        perft = 0;
+        cutoff = 0;
+        hit = 0;
     }
 
     @Override
     public CXGameState markColumn(int col) throws IndexOutOfBoundsException, IllegalStateException {
+        int pl = currentPlayer;
         CXGameState ret = super.markColumn(col);
-        firstcells[col]--;
+
+        CXCell lastmove = getLastMove();
+        bitBoard.markBit(lastmove.i, lastmove.j, pl);
+
         return ret;
     }
 
     @Override
     public void unmarkColumn() throws IllegalStateException {
+        
         CXCell lastmove = getLastMove();
-        firstcells[lastmove.j]++;
         super.unmarkColumn();
+        bitBoard.markBit(lastmove.i, lastmove.j, currentPlayer);
     }
 
     public int IterativeDepening() {
@@ -58,12 +73,13 @@ public class MoveEngine extends CXBoard {
         int max_depth = numOfFreeCells();
 
         for (int i = 0; i < L.length; i++) { // inizializing move array
-            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, M, 0, 0, 0);
+            ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, N, 0, 0, 0, 0);
         }
 
         int d = 1;
         for (d = 1; d <= max_depth; d++) {
             try {
+                table.reset();
 
                 ml = movelist(ml, d);
 
@@ -77,22 +93,27 @@ public class MoveEngine extends CXBoard {
 
                 System.err.format("depth: %d, time: %d\n", d, timer.getTimeElapsed());
             } catch (TimeoutException e) {
-                System.err.format("tempo finito\n");
+                System.err.format("time finished\n");
 
                 // for making the board in sync in case of TimeoutException
                 while(MC.size() > sizeMC) {
                     unmarkColumn();
                 }
-                for (Move m : ml) {
-                    System.err.println(m);
+                
+                if (debug) {
+                    for (Move m : ml) {
+                        System.err.println(m);
+                    }
                 }
 
                 return move;
             }
         }
 
-        for (Move m : ml) {
-            System.err.println(m);
+        if (debug) {
+            for (Move m : ml) {
+                System.err.println(m);
+            }
         }
 
         return move;
@@ -117,6 +138,7 @@ public class MoveEngine extends CXBoard {
 
                     perft = 0;
                     cutoff = 0;
+                    hit = 0;
 
                     markColumn(prevMl[i].move);
 
@@ -127,6 +149,7 @@ public class MoveEngine extends CXBoard {
                     prevMl[i].depth = depth;
                     prevMl[i].nodes = perft;
                     prevMl[i].cutoff = cutoff;
+                    prevMl[i].hit = hit;
 
                     unmarkColumn();
                 }
@@ -141,6 +164,7 @@ public class MoveEngine extends CXBoard {
 
                     perft = 0;
                     cutoff = 0;
+                    hit = 0;
 
                     markColumn(prevMl[i].move);
 
@@ -151,6 +175,7 @@ public class MoveEngine extends CXBoard {
                     prevMl[i].depth = depth;
                     prevMl[i].nodes = perft;
                     prevMl[i].cutoff = cutoff;
+                    prevMl[i].hit = hit;
 
                     unmarkColumn();
                 }
@@ -160,9 +185,28 @@ public class MoveEngine extends CXBoard {
     }
 
     private Score AlphaBeta(Score alpha, Score beta, int depth) throws TimeoutException {
+        
         Score eval;
+        eval = table.get(bitBoard.getKey());
+        if (eval != null) {
+            hit++;
+            return eval;
+        }
 
         Integer[] L = getAvailableColumns();
+
+        // riordina le mosse in modo da controllare prima le mosse più vicine al centro
+        Arrays.sort(L, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                int halfRow = (int) Math.floor(N / 2);
+
+                int distanceA = Math.abs(a - halfRow);
+                int distanceB = Math.abs(b - halfRow);
+
+                return distanceA - distanceB;
+            }
+        });
 
         if (depth <= 0 || gameState != CXGameState.OPEN) {
             eval = evaluate();
@@ -205,6 +249,8 @@ public class MoveEngine extends CXBoard {
                 }
             }
         }
+        table.put(bitBoard.getKey(), eval);
+
         return eval;
     }
 
@@ -233,7 +279,7 @@ public class MoveEngine extends CXBoard {
 
         for (int j = 0; j < N; j++) {
             timer.checktime();
-            int i = firstcells[j];
+            int i = RP[j] + 1;
             if (i <  M) {
                 value += possibleScore(i, j);
             }
