@@ -1,5 +1,7 @@
 package connectx.ForzaForza;
 
+import connectx.CXGameState;
+
 public class Move implements Comparable<Move> {
     public Score s;
     public int move;
@@ -33,6 +35,15 @@ public class Move implements Comparable<Move> {
         this.hit = 0;
     }
 
+    private int compareDepth(int d1, int d2) {
+        if (d1 == d2)
+            return 0;
+        else if (d1 < d2)
+            return -1;
+        else
+            return 1;
+    }
+
     /*
      * mette a confronto 2 mosse dal punto di vista del giocatore che deve
      * massimizzare
@@ -41,7 +52,7 @@ public class Move implements Comparable<Move> {
 
         int compareScore = this.s.compareTo(m.s);
 
-        if (compareScore == 0) {
+        if (compareScore == 0 && this.s.state == CXGameState.OPEN) {
             int halfRow = (int) Math.floor(this.N / 2);
 
             int distanceA = Math.abs(this.move - halfRow);
@@ -60,7 +71,23 @@ public class Move implements Comparable<Move> {
             else
                 return -cp;
         } else {
-            return compareScore;
+            if (compareScore != 0) {
+                return compareScore;
+            } else {
+                int compareD = compareDepth(this.depth, m.depth);
+                switch (this.s.state) {
+                    case OPEN:
+                        return 0;
+                    case DRAW:
+                        return compareD;
+                    case WINP1:
+                        return -compareD;
+                    case WINP2:
+                        return compareD;
+                    default:
+                        return 0;
+                }
+            }
         }
     }
 
