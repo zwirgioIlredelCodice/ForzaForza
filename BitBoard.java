@@ -5,7 +5,6 @@ import java.math.BigInteger;
 public class BitBoard {
 
     BigInteger p1;
-    BigInteger p2;
     BigInteger all;
 
     int M;
@@ -13,7 +12,6 @@ public class BitBoard {
 
     public BitBoard(int M, int N) {
         p1 = BigInteger.ZERO; // 1 se c'è la pedina di p1 0 altrimenti
-        p2 = BigInteger.ZERO; // 1 se pedina di p2 ..
         all = BigInteger.ZERO; // p1 and p2
 
         this.M = M;
@@ -24,8 +22,6 @@ public class BitBoard {
         int n = row * M + col;
         if (player == 0) {
             p1 = p1.flipBit(n);
-        } else {
-            p2 = p2.flipBit(n);
         }
         all = all.flipBit(n);
     }
