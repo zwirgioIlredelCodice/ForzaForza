@@ -13,17 +13,11 @@ public class Score implements Comparable<Score> {
 
     public int compareTo(Score s) {
         if (this.state == s.state) {
-            switch (this.state) {
-                case OPEN:
-                    return compareScore(this.score, s.score);
-                case DRAW:
-                    return 0;
-                case WINP1:
-                    return 0;
-                case WINP2:
-                    return 0;
-                default:
-                    return 0;
+            if (this.state == CXGameState.OPEN) {
+                return compareScore(this.score, s.score);
+            }
+            else {
+                return 0;
             }
         } else {
             return compareState(this.state, s.state);
