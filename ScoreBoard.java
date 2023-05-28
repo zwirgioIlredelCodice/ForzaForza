@@ -8,14 +8,10 @@ public class ScoreBoard {
 
     int M,N,X;
 
-    public int sus;
-
     public ScoreBoard(int M, int N, int X) {
         this.M = M;
         this.N = N;
         this.X = X;
-
-        sus = 0;
 
         sb = new LinkedList[M][N];
 
@@ -32,17 +28,14 @@ public class ScoreBoard {
             for (int j = 0; j < N; j++) { // collum x
                 
                 if (M - i >= X) { // in giu
-                    sus++;
                     ScoreSet sc = new ScoreSet();
                     for (int k = i; k < X; k++) sb[k][j].add(sc);
                 }
                 if (N - j >= X) { // in avanti
-                    sus++;
                     ScoreSet sc = new ScoreSet();
                     for (int k = j; k < X; k++) sb[i][k].add(sc);
                 }
                 if ((M - i >= X) && (N - j >= X)) { // avanti giu
-                    sus++;
                     ScoreSet sc = new ScoreSet();
                     int kk = j;
                     for (int k = i; k < X; k++) {
@@ -51,7 +44,6 @@ public class ScoreBoard {
                     }
                 }
                 if ((i + 1 >= X) && (N - j >= X)) { // avanti su
-                    sus++;
                     ScoreSet sc = new ScoreSet();
                     int kk = j;
                     for (int k = i; i-k < X; k--) {
@@ -85,17 +77,6 @@ public class ScoreBoard {
             deltaScore += scoreSet.score - ps;
         }
         totalScore += deltaScore;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Hello World");
-
-        ScoreBoard cacca = new ScoreBoard(3, 2, 2);
-        System.out.println(cacca.sus);
-        cacca.move(0, 0, 0);
-        System.out.format("score:%d", cacca.totalScore);
-        cacca.move(0, 1, 0);
-        System.out.format("score:%d", cacca.totalScore);
     }
 }
 

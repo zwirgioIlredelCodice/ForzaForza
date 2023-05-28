@@ -45,6 +45,16 @@ public class ForzaForza implements CXPlayer {
 	}
 
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
+		
+		String s = String.join(
+			System.getProperty("line.separator"),
+			"____ ____ ____ ___  ____ ____ ____ ____ ___  ____",
+			"|___ |  | |__/   /  |__| |___ |  | |__/   /  |__|",
+			"|    |__| |  \\  /__ |  | |    |__| |  \\  /__ |  |",
+			" ",
+			"by Fabio Murer"
+		);
+		System.err.println(s);
 		engine = new MoveEngine(M, N, K, timeout_in_secs);
 	}
 
