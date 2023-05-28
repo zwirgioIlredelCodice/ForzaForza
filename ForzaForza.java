@@ -6,14 +6,27 @@ import connectx.CXCell;
 
 import java.util.Scanner;
 
+/** 
+ * ForzaForza è la classe principale del progetto ed è 
+ * la parte che si occupa di dialogare con gli altri giocatori
+*/
+
 public class ForzaForza implements CXPlayer {
 
+	/**
+	 * la classe engine è la classe che si occupa
+	 * di calcolare la mossa migliore
+	 */
 	private MoveEngine engine;
 
 	/* Default empty constructor */
 	public ForzaForza() {
 	}
 
+	/**
+	 * Questo metodo è stata creata per testare e comparare
+	 * le performance del giocatore
+	 */
 	public static void main(String[] args) {
 		Scanner s = new Scanner(System.in);
 		ForzaForza engine = new ForzaForza();
@@ -44,6 +57,9 @@ public class ForzaForza implements CXPlayer {
 		s.close();
 	}
 
+	/**
+	 * inizzializza il giocatore software
+	 */
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
 		
 		String s = String.join(
@@ -58,12 +74,20 @@ public class ForzaForza implements CXPlayer {
 		engine = new MoveEngine(M, N, K, timeout_in_secs);
 	}
 
+	/*
+	 * questo metodo deve effettuare una scelta ottimale
+	 * della mossa tra tutte quelle possibili
+	 */
 	public int selectColumn(CXBoard B) {
+		/*
+		 * questa parte di codice si occupa di tenere sincronizzata
+		 * lo stato del gioco tra l'oggetto engine e il gioco corrente
+		 */
 		CXCell lasmove = B.getLastMove();
 		if (lasmove != null) {
 			engine.markColumn(lasmove.j);
 		}
-		int col = engine.IterativeDepening();
+		int col = engine.IterativeDepening(); // ritorna la mossa migiore
 		engine.markColumn(col);
 		return col;
 	}
@@ -72,6 +96,7 @@ public class ForzaForza implements CXPlayer {
 		return "ForzaForza";
 	}
 
+	// metodi per valutare le performance del giocatore
 	public void perftest() {
 		engine = new MoveEngine(6, 7, 4, 10);
 

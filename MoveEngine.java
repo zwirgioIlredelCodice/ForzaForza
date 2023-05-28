@@ -8,6 +8,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * questa è la classe che si occupa di tutti i calcoli per 
+ * determinare la mossa mogiore.
+ */
+
 public class MoveEngine extends CXBoard {
 
     private MyTimer timer;
@@ -63,10 +68,20 @@ public class MoveEngine extends CXBoard {
         scoreBoard.unmove(lastmove.i, lastmove.j, currentPlayer);
     }
 
+    /*
+     * questo metodo resistuisce la mossa migiore avendo a 
+     * disposizione un tempo fissato.
+     * 
+     * il suo funzionamento consiste nel valutare l'albero di gioco ad
+     * una profondità sempre crescente finchè ha tempo, le mosse dopo 
+     * ogni visita vengono ordinate dalla più promettente alla meno 
+     * così che nelle visite sucessive si valutino le mosse più 
+     * promettenti prima 
+     */
     public int IterativeDepening() {
         timer.start();
 
-        // for making the board in sync in case of TimeoutException
+        // salva lo stato della scacchiera in modo da riportarla al valore generale in caso di una TimeoutException
         int sizeMC = MC.size();
 
         Integer[] L = getAvailableColumns();
@@ -75,7 +90,7 @@ public class MoveEngine extends CXBoard {
 
         int max_depth = numOfFreeCells();
 
-        for (int i = 0; i < L.length; i++) { // inizializing move array
+        for (int i = 0; i < L.length; i++) { // inizzializza l'array delle mosse
             ml[i] = new Move(L[i], new Score(0, CXGameState.OPEN), currentPlayer, N, 0, 0, 0, 0);
         }
 
@@ -86,6 +101,7 @@ public class MoveEngine extends CXBoard {
 
                 ml = movelist(ml, d);
 
+                // ordina le mosse
                 if (currentPlayer == 0) {
                     Arrays.sort(ml, Collections.reverseOrder());
                 } else {
@@ -98,7 +114,7 @@ public class MoveEngine extends CXBoard {
             } catch (TimeoutException e) {
                 System.err.format("time finished\n");
 
-                // for making the board in sync in case of TimeoutException
+                // annulla le mosse fatte durante una ricera interrotta per mancaza di tempo
                 while(MC.size() > sizeMC) {
                     unmarkColumn();
                 }
@@ -122,6 +138,17 @@ public class MoveEngine extends CXBoard {
         return move;
     }
 
+    /**
+     * ritorna tutte le mosse che il giocatore può fare valutate 
+     * ad una profondità depth
+     * 
+     * funzionamento:
+     * ogni mossa viene valutata eseguendo l'algoritmo minimax
+     * 
+     * @param prevMl    l'array di mosse da valutare
+     * @param depth     la profodità della valutazione
+     * @return          l'array di mosse valutate alla profondità depth
+     */
     private Move[] movelist(Move[] prevMl, int depth) throws TimeoutException {
         Score eval;
 
@@ -187,7 +214,15 @@ public class MoveEngine extends CXBoard {
         return prevMl;
     }
 
-    private Integer[] fastSort(Integer[] L) {
+    /**
+     * questo metodo si occupa di ordinare le mosse in modo approssimativo
+     * ma molto velocemente in modo da aiutare l'algoritmo minimax con ottimizazione
+     * alpa-beta pruning.
+     * 
+     * @param L l'array di colonne libere
+     * @return  l'array di colonne libere ordinato dal più promettente al meno in modo approssimativo
+     */
+    private Integer[] stepSort(Integer[] L) {
         Integer[] out = new Integer[L.length];
         Move[] ma = new Move[L.length];
 
@@ -213,13 +248,27 @@ public class MoveEngine extends CXBoard {
         return out;
     }
 
+    /**
+     * ritorna il punteggio migiore per il giocatore riferito a una scacchera di gioco.
+     * implementa l'algoritmo minimax con queste ottimizzazioni:
+     * 
+     * 1. alpha-beta pruning
+     * 2. parziale riordinamento delle mosse
+     * 3. salvataggio dei punteggi calcolati in una struttura simile alla cache del computer
+     * 
+     * @param alpha il punteggio peggiore che può avere Max
+     * @param beta  il punteggio migiore che può avere Min
+     * @param depth la profondità di ricerca
+     * @return      il punteggio migiore per il giocatore su una scacchiera di gioco
+     * @throws TimeoutException
+     */
     private Score AlphaBeta(Score alpha, Score beta, int depth) throws TimeoutException {
         
         Score eval;
         
         if (depth >= 2) {
             eval = table.get(bitBoard.getKey());
-            if (eval != null) {
+            if (eval != null) { // se la pisizione è già stata valutata in precendeza e si ha il valor salvato termina
                 hit++;
                 return eval;
             }
@@ -227,9 +276,9 @@ public class MoveEngine extends CXBoard {
 
         Integer[] L = getAvailableColumns();
 
-        // riordina le mosse in modo da controllare prima le mosse più vicine al centro
+        // riordina le mosse in modo da controllare prima le mosse più promettenti
         if (depth >= 1) {
-            L = fastSort(L);
+            L = stepSort(L);
         }
         
 
@@ -294,7 +343,11 @@ public class MoveEngine extends CXBoard {
             return b;
     }
 
-    public Score evaluate() throws TimeoutException {
+    /**
+     * ritorna un punteggio calcolato euristicamente per la situazione di gioco corrente
+     * @return un punteggio calcolato euristicamente per la situazione di gioco corrente
+     */
+    public Score evaluate() {
         int value = scoreBoard.totalScore;
         Score s = new Score(value, gameState);
         return s;
