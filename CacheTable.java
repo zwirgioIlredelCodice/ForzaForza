@@ -2,7 +2,23 @@ package connectx.ForzaForza;
 
 import java.math.BigInteger;
 
+/**
+ * Lo scopo di questa classe è di salvare il punteggio delle 
+ * scaccheire già calcolate in modo da avere immediatamente il loro punteggio
+ * se richiesto.
+ * 
+ * il salvataggio dei punteggi viene effetuato in una struttura dati simile
+ * ad una tabella ad accesso e una tabella hash diretto dove però la grandezza 
+ * della tabella è fissata.
+ * In caso di collisione si sovrascrive il dato con il più recente in modo da
+ * tenere i punteggi delle scacchiere più recenti, questa tabella emula il funzionamento 
+ * delle memorie cache dei processori.
+ */
 public class CacheTable {
+
+    /**
+     * grandezza di default della tabella, occupa circa 1.3GB di ram su Linux
+     */
     private static final int DEFAULT_SIZE = 50000;
     
     private int size;
@@ -17,18 +33,32 @@ public class CacheTable {
         this.table = new Data[size];
     }
 
+    /**
+     * metodo che data una chiave rappresentante una scacchiera 
+     * ritorna la posizione in cui si potrebbe trovare il punteggio 
+     * ad essa associata nella tabella
+     */
     private int hash(BigInteger key) {
         int hc = key.hashCode();
         int rem = hc % size;
         return Math.abs(rem);
     }
 
+    /**
+     * aggiunge una posizione di gioco alla tabella
+     * @param key la chiave della posizione di gioco
+     * @param value il valore calcolato per quella posizione
+     */
     public void put(BigInteger key, Score value) {
         int index = hash(key);
         Data data = new Data(key, value);
         table[index] = data;
     }
 
+    /**
+     * @param key la chiave della posizione di gioco
+     * @return il valore associato a quella posizione, se non è presente restituisce null
+     */
     public Score get(BigInteger key) {
         int index = hash(key);
         Data data = table[index];
@@ -42,6 +72,9 @@ public class CacheTable {
         return null;
     }
 
+    /**
+     * effettua il reset della tabella
+     */
     public void reset() {
         this.table = new Data[size];
     }
