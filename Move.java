@@ -2,13 +2,22 @@ package connectx.ForzaForza;
 
 import connectx.CXGameState;
 
+/**
+ * classe che definisce una mossa giocabile e che si occupa 
+ * di confrontare le mosse grazie all'implementazione della 
+ * interfaccia Comparable
+ * 
+ * una mossa viene valutata per: il punteggio che può portare al giocatore se viene fatta, 
+ * la colonna in cui viene fatta per la profondità della valutazione.
+ */
 public class Move implements Comparable<Move> {
-    public Score s;
-    public int move;
-    private int player;
+    public Score s; // la valutazione della mossa
+    public int move; // colonna in cui si mette la pedina
+    private int player; // il giocatore che la esegue
     private int N; // righe massime
+    public int depth; // profondità della valutazione
 
-    public int depth;
+    // variabili per il debug
     public int nodes;
     public int cutoff;
     public int hit;
@@ -45,8 +54,7 @@ public class Move implements Comparable<Move> {
     }
 
     /*
-     * mette a confronto 2 mosse dal punto di vista del giocatore che deve
-     * massimizzare
+     * mette a confronto le mosse dal punto di vista del giocatore 1
      */
     public int compareTo(Move m) {
 
@@ -58,6 +66,7 @@ public class Move implements Comparable<Move> {
             int distanceA = Math.abs(this.move - halfRow);
             int distanceB = Math.abs(m.move - halfRow);
 
+            // preferisce le mosse vicine al centro della scacchiera
             int cp = 0;
             if (distanceA < distanceB)
                 cp = 1;
@@ -79,11 +88,11 @@ public class Move implements Comparable<Move> {
                     case OPEN:
                         return 0;
                     case DRAW:
-                        return compareD;
+                        return compareD; // ritarda la resa il pù possibile
                     case WINP1:
-                        return -compareD;
+                        return -compareD; // anticipa la vittoria il più possibile
                     case WINP2:
-                        return compareD;
+                        return compareD; // ritarda la sconfitta il più possibile
                     default:
                         return 0;
                 }

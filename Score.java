@@ -2,6 +2,14 @@ package connectx.ForzaForza;
 
 import connectx.CXGameState;
 
+
+/**
+ * classe che definisce il punteggio di una certa scacchiera e che 
+ * si occupa di confrontare i punteggi grazie all'implementazione della interfaccia Comparable
+ * 
+ * al suo interno c'è un campo intero score che associa un numero positivo se la posizione di gioco è 
+ * a favore del giocatore 1 o minore di zero altrimenti e lo stato di gioco
+ */
 public class Score implements Comparable<Score> {
     public int score;
     public CXGameState state;
@@ -11,6 +19,9 @@ public class Score implements Comparable<Score> {
         this.state = state;
     }
 
+    /**
+     * il metodo compareTo confronta i punteggi dal punto di vista del giocatore 1
+     */
     public int compareTo(Score s) {
         if (this.state == s.state) {
             if (this.state == CXGameState.OPEN) {
@@ -32,7 +43,7 @@ public class Score implements Comparable<Score> {
                     case OPEN:
                         return 0;
                     case DRAW:
-                        return 1;
+                        return 1; // il gioco aperto viene preferito alla patta
                     case WINP1:
                         return -1;
                     case WINP2:
