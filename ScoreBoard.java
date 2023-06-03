@@ -1,7 +1,25 @@
 package connectx.ForzaForza;
-
 import java.util.LinkedList;
 
+
+/**
+ * questa classe si occupa di associare efficentemente un valore intero ad una
+ * posizione di gioco in maniera euristica, ovvero di associare un numero 
+ * che simboleggia le possibilità di vittoria per il giocatore 1 data da una posizione di gioco.
+ * Il valore numerico più precisamente è calcolato come: il numero di X in linea effetuabili dal giocatore 1 
+ * meno il numero di X in linea effetuabili dal giocatore 2 dando peso agli X in linea più completi.
+ * 
+ * esemio M=4 N=4 X=3 # pedin del giocatore 1
+ *      . . . .                                                         . . . .
+ *      . . . .                                                         . | . /
+ *      . . . .                                                         . | / .
+ *      . # . . da questa posizione è possibile fare 3 3 in fila        . # - -     il punteggio sarà +3
+ * 
+ * implementazione:
+ * ogni cella della scacchiera è un insieme contenente tutti i modi per mettere X pedine in fila che
+ * passano da quella cella. in questo modo per avere il punteggio dopo una nuova mossa il costo computazionale è O(X)
+ * questa implementzione scambia memoria per velocità di calcolo 
+ */
 public class ScoreBoard {
     LinkedList<ScoreSet> sb[][];
     public int totalScore;
@@ -23,6 +41,14 @@ public class ScoreBoard {
         initBoard();
     }
 
+    /**
+     * associa 
+     * calcola tutti i possibili modi di mettere X pedine in fila e 
+     * associa a ogni cella della scacchiera utti i possibili modi di 
+     * mettere X pedine in fila che passano da essa
+     * 
+     * Costo O(MNX)
+     */
     private void initBoard() {
         for (int i = 0; i < M; i++) { // row y
             for (int j = 0; j < N; j++) { // collum x
@@ -55,6 +81,12 @@ public class ScoreBoard {
         }
     }
 
+    /**
+     * aggiorna la struttura dopo una nuova mossa
+     * @param m righa
+     * @param n colonna
+     * @param player giocatore che compie la mossa
+     */
     public void move(int m, int n, int player) {
         LinkedList<ScoreSet> cell = sb[m][n];
 
@@ -67,6 +99,12 @@ public class ScoreBoard {
         totalScore += deltaScore;
     }
 
+    /**
+     * aggiorna la struttura annullando una mossa
+     * @param m righa
+     * @param n colonna
+     * @param player giocatore che compie la mossa
+     */
     public void unmove(int m, int n, int player) {
         LinkedList<ScoreSet> cell = sb[m][n];
 
@@ -80,6 +118,10 @@ public class ScoreBoard {
     }
 }
 
+/**
+ * classe che simboleggia le X pedine in fila, tiene conto
+ * del tipo e della quantità delle pedine in essa.
+ */
 class ScoreSet {
     public int score, p1, p2;
 
@@ -90,7 +132,7 @@ class ScoreSet {
     }
 
     private void fixScore() {
-        if (p1 == 0 || p2 == 0) {
+        if (p1 == 0 || p2 == 0) { // se tutte le pedine sono dello stesso colore allora è valido
             if (p1 > p2) score = p1;
             else score = -p2;
         }
