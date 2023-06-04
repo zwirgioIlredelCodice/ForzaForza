@@ -14,7 +14,7 @@ import java.math.BigInteger;
  * tenere i punteggi delle scacchiere più recenti, questa tabella emula il funzionamento 
  * delle memorie cache dei processori.
  */
-public class CacheTable {
+public class CacheTable <T> {
 
     /**
      * grandezza di default della tabella, occupa circa 1.3GB di ram su Linux
@@ -22,7 +22,7 @@ public class CacheTable {
     private static final int DEFAULT_SIZE = 50000;
     
     private int size;
-    private Data [] table;
+    private Data<T> [] table;
 
     public CacheTable() {
         this(DEFAULT_SIZE);
@@ -38,7 +38,7 @@ public class CacheTable {
      * ritorna la posizione in cui si potrebbe trovare il punteggio 
      * ad essa associata nella tabella
      */
-    private int hash(BigInteger key) {
+    private int hash(T key) {
         int hc = key.hashCode();
         int rem = hc % size;
         return Math.abs(rem);
@@ -49,9 +49,9 @@ public class CacheTable {
      * @param key la chiave della posizione di gioco
      * @param value il valore calcolato per quella posizione
      */
-    public void put(BigInteger key, Score value) {
+    public void put(T key, Score value) {
         int index = hash(key);
-        Data data = new Data(key, value);
+        Data<T> data = new Data(key, value);
         table[index] = data;
     }
 
@@ -59,9 +59,9 @@ public class CacheTable {
      * @param key la chiave della posizione di gioco
      * @return il valore associato a quella posizione, se non è presente restituisce null
      */
-    public Score get(BigInteger key) {
+    public Score get(T key) {
         int index = hash(key);
-        Data data = table[index];
+        Data<T> data = table[index];
         
         if (data != null) {
             if (data.key.equals(key)) {
@@ -80,15 +80,15 @@ public class CacheTable {
     }
 }
 
-class Data {
-    public BigInteger key;
+class Data <T> {
+    public T key;
     public Score value;
 
     public Data() {
         this(null, null);
     }
 
-    public Data(BigInteger key, Score value) {
+    public Data(T key, Score value) {
         this.key = key;
         this.value = value;
     }

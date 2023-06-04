@@ -4,6 +4,7 @@ import connectx.CXBoard;
 import connectx.CXGameState;
 import connectx.CXCell;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
@@ -34,9 +35,16 @@ public class MoveEngine extends CXBoard {
     public MoveEngine(int M, int N, int X, int timeout_in_secs) {
         super(M, N, X);
 
+        if (M * N <= 64) {// ci stanno in un long
+            bitBoard = new BitBoardLong(M, N);
+            table = new CacheTable<Long>();
+        } else {
+            bitBoard = new BitBoardBigInteger(M, N);
+            table = new CacheTable<BigInteger>();
+        }
+
         this.timer = new MyTimer(timeout_in_secs);
-        bitBoard = new BitBoard(M, N);
-        table = new CacheTable();
+        
         scoreBoard = new ScoreBoard(M, N, X);
 
         MAX_SCORE = new Score(Integer.MAX_VALUE, CXGameState.WINP1);
