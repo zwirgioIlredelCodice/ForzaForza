@@ -9,6 +9,8 @@ import connectx.CXGameState;
  * 
  * al suo interno c'è un campo intero score che associa un numero positivo se la posizione di gioco è 
  * a favore del giocatore 1 o minore di zero altrimenti e lo stato di gioco
+ * 
+ * tutti i metodi di questa classe hanno costo costante O(1)
  */
 public class Score implements Comparable<Score> {
     public int score;

@@ -31,6 +31,9 @@ public class MoveEngine extends CXBoard {
     private int cutoff;
     private int hit;
 
+    /**
+     * Costo: dominato da ScoreBoard O(MNX)
+     */
     public MoveEngine(int M, int N, int X, int timeout_in_secs) {
         super(M, N, X);
 
@@ -47,6 +50,9 @@ public class MoveEngine extends CXBoard {
         hit = 0;
     }
 
+    /**
+     * Costo: dominato da bitBoard.markBit O(MN)
+     */
     @Override
     public CXGameState markColumn(int col) throws IndexOutOfBoundsException, IllegalStateException {
         int pl = currentPlayer;
@@ -59,6 +65,9 @@ public class MoveEngine extends CXBoard {
         return ret;
     }
 
+    /**
+     * Costo: dominato da bitBoard.markBit O(MN)
+     */
     @Override
     public void unmarkColumn() throws IllegalStateException {
         
@@ -77,6 +86,8 @@ public class MoveEngine extends CXBoard {
      * ogni visita vengono ordinate dalla più promettente alla meno 
      * così che nelle visite sucessive si valutino le mosse più 
      * promettenti prima 
+     * 
+     * Costo: O(M^N*(MN)^2)
      */
     public int IterativeDepening() {
         timer.start();
@@ -148,6 +159,8 @@ public class MoveEngine extends CXBoard {
      * @param prevMl    l'array di mosse da valutare
      * @param depth     la profodità della valutazione
      * @return          l'array di mosse valutate alla profondità depth
+     * 
+     * Costo: O(M^depth*(MN)^2)
      */
     private Move[] movelist(Move[] prevMl, int depth) throws TimeoutException {
         Score eval;
@@ -221,6 +234,8 @@ public class MoveEngine extends CXBoard {
      * 
      * @param L l'array di colonne libere
      * @return  l'array di colonne libere ordinato dal più promettente al meno in modo approssimativo
+     * 
+     * Costo: O(nlog(n)) con n = L.lenght
      */
     private Integer[] stepSort(Integer[] L) {
         Integer[] out = new Integer[L.length];
@@ -261,6 +276,8 @@ public class MoveEngine extends CXBoard {
      * @param depth la profondità di ricerca
      * @return      il punteggio migiore per il giocatore su una scacchiera di gioco
      * @throws TimeoutException
+     * 
+     * Costo: O(M^depth*(MN)^2)
      */
     private Score AlphaBeta(Score alpha, Score beta, int depth) throws TimeoutException {
         

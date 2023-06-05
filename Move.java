@@ -9,6 +9,8 @@ import connectx.CXGameState;
  * 
  * una mossa viene valutata per: il punteggio che può portare al giocatore se viene fatta, 
  * la colonna in cui viene fatta per la profondità della valutazione.
+ * 
+ * tutti i metodi di questa classe hanno un costo costante O(1)
  */
 public class Move implements Comparable<Move> {
     public Score s; // la valutazione della mossa

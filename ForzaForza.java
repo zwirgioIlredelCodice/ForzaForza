@@ -77,6 +77,7 @@ public class ForzaForza implements CXPlayer {
 	/*
 	 * questo metodo deve effettuare una scelta ottimale
 	 * della mossa tra tutte quelle possibili
+	 * Costo: O(B.M^B.N*(B.M*B.N)^2)
 	 */
 	public int selectColumn(CXBoard B) {
 		/*

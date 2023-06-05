@@ -7,6 +7,12 @@ import java.math.BigInteger;
  * BigInteger, questo viene fatto pe identificare facilmente uno 
  * stato del gioco utilizzando solo un numero, ovvero rappresenta 
  * uno stato del gioco con una chiave.
+ * 
+ * I costi computazionali riguardanti le operazioni sul dato BigInteger sono:
+ *      flipBit O(n)
+ *      add O(n)
+ *      multiply O(n^2)
+ *      n = numero di cifre che compongono il numero, nella classe BigInteger corrisponde a mag.length
  */
 
 public class BitBoard {
@@ -46,6 +52,8 @@ public class BitBoard {
      * @param row la righa dove viene messa la pedina
      * @param col la colonna dove viene messa la pedina
      * @param player in giocatore che fa la mossa
+     * 
+     * Costo: O(MN)
      */
     public void markBit(int row, int col, int player) {
         int n = row * M + col;
@@ -64,6 +72,8 @@ public class BitBoard {
      * questo metodo codifica p1 e all in un unico numero utilizzando l'idea di 
      * funzione coppia https://en.wikipedia.org/wiki/Pairing_function
      * @return un numero che rappresenta univocamente la scacchiera di gioco
+     * 
+     * Costo: O((MN)^2)
      */
     public BigInteger getKey() {
         // implementazione della funzione coppia elegant pairing function by Matthew Szudzik @ Wolfram Research, Inc.
@@ -71,7 +81,7 @@ public class BitBoard {
         //      return (x >= y) ? (x * x + x + y) : (y * y + x);
         // }
         // si sa per per certo che all >= p1 perche all = p1 and p2
-        BigInteger key = all.pow(2);
+        BigInteger key = all.multiply(all);
         key = key.add(p1);
         return key;
     }

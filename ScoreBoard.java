@@ -26,6 +26,9 @@ public class ScoreBoard {
 
     int M,N,X;
 
+    /**
+     * Costo O(MNX)
+     */
     public ScoreBoard(int M, int N, int X) {
         this.M = M;
         this.N = N;
@@ -86,6 +89,8 @@ public class ScoreBoard {
      * @param m righa
      * @param n colonna
      * @param player giocatore che compie la mossa
+     * 
+     * costo: O(X)
      */
     public void move(int m, int n, int player) {
         LinkedList<ScoreSet> cell = sb[m][n];
@@ -104,6 +109,8 @@ public class ScoreBoard {
      * @param m righa
      * @param n colonna
      * @param player giocatore che compie la mossa
+     * 
+     * costo: O(X)
      */
     public void unmove(int m, int n, int player) {
         LinkedList<ScoreSet> cell = sb[m][n];
@@ -121,6 +128,8 @@ public class ScoreBoard {
 /**
  * classe che simboleggia le X pedine in fila, tiene conto
  * del tipo e della quantità delle pedine in essa.
+ * 
+ * tutti i metodi di questa classe hanno un costo costante O(1)
  */
 class ScoreSet {
     public int score, p1, p2;

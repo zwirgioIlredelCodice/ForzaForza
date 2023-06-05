@@ -13,6 +13,11 @@ import java.math.BigInteger;
  * In caso di collisione si sovrascrive il dato con il più recente in modo da
  * tenere i punteggi delle scacchiere più recenti, questa tabella emula il funzionamento 
  * delle memorie cache dei processori.
+ * 
+ * I costi computazionali riguardanti le operazioni sul dato BigInteger sono:
+ *      hashCode O(n)
+ *      equals O(n)
+ *      n = numero di cifre che compongono il numero, nella classe BigInteger corrisponde a mag.length
  */
 public class CacheTable {
 
@@ -37,6 +42,8 @@ public class CacheTable {
      * metodo che data una chiave rappresentante una scacchiera 
      * ritorna la posizione in cui si potrebbe trovare il punteggio 
      * ad essa associata nella tabella
+     * 
+     * Costo: O(key.mag.length)
      */
     private int hash(BigInteger key) {
         int hc = key.hashCode();
@@ -48,6 +55,8 @@ public class CacheTable {
      * aggiunge una posizione di gioco alla tabella
      * @param key la chiave della posizione di gioco
      * @param value il valore calcolato per quella posizione
+     * 
+     * Costo: O(key.mag.length)
      */
     public void put(BigInteger key, Score value) {
         int index = hash(key);
@@ -58,6 +67,8 @@ public class CacheTable {
     /**
      * @param key la chiave della posizione di gioco
      * @return il valore associato a quella posizione, se non è presente restituisce null
+     * 
+     * Costo: O(key.mag.length)
      */
     public Score get(BigInteger key) {
         int index = hash(key);

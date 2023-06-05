@@ -5,6 +5,8 @@ import java.util.concurrent.TimeoutException;
 /**
  * questa classe si occupa di tenere il tempo trascorso da quando viene data
  * l'eseguzione al giocatore in modo da non utilizzare più tempo di quello permesso
+ * 
+ * tutti i metodi di questa classe hanno un costo costante O(1)
  */
 
 public class MyTimer {
