@@ -9,7 +9,7 @@
 
 * test `java -cp ".." connectx.CXPlayerTester 6 7 4 connectx.L1.L1 connectx.ForzaForza.ForzaForza -v -t 1 -r 5`
 * test test `java -cp ".." connectx.ForzaForza.ForzaForza`
-* graphic test `java -cp ".." connectx.CXGame 6 7 4 connectx.L0.L0 connectx.ForzaForza.ForzaForza`
+* graphic test `java -cp ".." connectx.CXGame 6 7 4 connectx.ForzaForza.ForzaForza`
 
 ## configuration to test
 

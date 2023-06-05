@@ -17,7 +17,7 @@ public class MoveEngine extends CXBoard {
 
     private MyTimer timer;
 
-    private BitBoard bitBoard;
+    private ZobristHash boardHash;
     private CacheTable table;
 
     private ScoreBoard scoreBoard;
@@ -35,7 +35,7 @@ public class MoveEngine extends CXBoard {
         super(M, N, X);
 
         this.timer = new MyTimer(timeout_in_secs);
-        bitBoard = new BitBoard(M, N);
+        boardHash = new ZobristHash(M, N);
         table = new CacheTable();
         scoreBoard = new ScoreBoard(M, N, X);
 
@@ -53,7 +53,7 @@ public class MoveEngine extends CXBoard {
         CXGameState ret = super.markColumn(col);
 
         CXCell lastmove = getLastMove();
-        bitBoard.markBit(lastmove.i, lastmove.j, pl);
+        boardHash.updateHash(lastmove.i, lastmove.j, pl);
         scoreBoard.move(lastmove.i, lastmove.j, pl);
 
         return ret;
@@ -64,7 +64,7 @@ public class MoveEngine extends CXBoard {
         
         CXCell lastmove = getLastMove();
         super.unmarkColumn();
-        bitBoard.markBit(lastmove.i, lastmove.j, currentPlayer);
+        boardHash.updateHash(lastmove.i, lastmove.j, currentPlayer);
         scoreBoard.unmove(lastmove.i, lastmove.j, currentPlayer);
     }
 
@@ -267,7 +267,7 @@ public class MoveEngine extends CXBoard {
         Score eval;
         
         if (depth >= 2) {
-            eval = table.get(bitBoard.getKey());
+            eval = table.get(boardHash.getHash());
             if (eval != null) { // se la pisizione è già stata valutata in precendeza e si ha il valor salvato termina
                 hit++;
                 return eval;
@@ -324,7 +324,7 @@ public class MoveEngine extends CXBoard {
             }
         }
         
-        if (depth >= 2) table.put(bitBoard.getKey(), eval);
+        if (depth >= 2) table.put(boardHash.getHash(), eval);
 
         return eval;
     }
