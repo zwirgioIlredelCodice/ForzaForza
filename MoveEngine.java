@@ -25,7 +25,7 @@ public class MoveEngine extends CXBoard {
     private Score MAX_SCORE;
     private Score MIN_SCORE;
 
-    final boolean debug = true;
+    final boolean debug = false;
 
     private int perft;
     private int cutoff;
@@ -134,6 +134,8 @@ public class MoveEngine extends CXBoard {
                     for (Move m : ml) {
                         System.err.println(m);
                     }
+                } else {
+                    System.err.println(ml[0]);
                 }
 
                 return move;
@@ -144,6 +146,8 @@ public class MoveEngine extends CXBoard {
             for (Move m : ml) {
                 System.err.println(m);
             }
+        } else {
+            System.err.println(ml[0]);
         }
 
         return move;
@@ -235,7 +239,7 @@ public class MoveEngine extends CXBoard {
      * @param L l'array di colonne libere
      * @return  l'array di colonne libere ordinato dal più promettente al meno in modo approssimativo
      * 
-     * Costo: O(nlog(n)) con n = L.lenght
+     * O(MX)
      */
     private Integer[] stepSort(Integer[] L) {
         Integer[] out = new Integer[L.length];

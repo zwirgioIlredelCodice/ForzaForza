@@ -24,7 +24,7 @@ public class CacheTable {
     /**
      * grandezza di default della tabella, occupa circa 1.3GB di ram su Linux
      */
-    private static final int DEFAULT_SIZE = 50000;
+    private static final int DEFAULT_SIZE = 150000;
     
     private int size;
     private Data [] table;
