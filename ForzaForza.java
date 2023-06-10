@@ -24,7 +24,7 @@ public class ForzaForza implements CXPlayer {
 	}
 
 	/**
-	 * Questo metodo è stata creata per testare e comparare
+	 * Questo metodo è stata creata per testare e confrontare
 	 * le performance del giocatore
 	 */
 	public static void main(String[] args) {

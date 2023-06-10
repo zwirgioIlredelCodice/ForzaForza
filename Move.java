@@ -16,7 +16,7 @@ public class Move implements Comparable<Move> {
     public Score s; // la valutazione della mossa
     public int move; // colonna in cui si mette la pedina
     private int player; // il giocatore che la esegue
-    private int N; // righe massime
+    private int N; // colonne massime
     public int depth; // profondità della valutazione
 
     // variabili per il debug
